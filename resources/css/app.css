@@ -1,0 +1,378 @@
+@import 'tailwindcss';
+
+@source '../**/*.blade.php';
+@source '../**/*.tsx';
+@source '../**/*.ts';
+
+@theme {
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, Consolas, monospace;
+
+    /* Brand — pastel lime that matches reference */
+    --color-brand-50:  #f3fce0;
+    --color-brand-100: #e6f9b3;
+    --color-brand-200: #d3f483;
+    --color-brand-300: #bff15a;   /* primary CTA */
+    --color-brand-400: #b1ea3e;
+    --color-brand-500: #97d722;
+    --color-brand-600: #79b416;
+    --color-brand-700: #56850e;
+    --color-brand-ink: #0a0a0c;
+
+    /* Cyan accent — used in gradient headline */
+    --color-cy-300: #6ce7d2;
+    --color-cy-400: #4cd1c1;
+
+    /* Ink scale, calibrated for true near-black */
+    --color-ink-50:   #0a0c10;
+    --color-ink-100:  #0e1014;
+    --color-ink-200:  #14171c;
+    --color-ink-300:  #1a1d23;
+    --color-ink-400:  #232730;
+    --color-ink-500:  #353a47;
+    --color-ink-600:  #4a5160;
+    --color-ink-700:  #6b7281;
+    --color-ink-800:  #a8afbd;
+    --color-ink-900:  #ebeef3;
+
+    --color-progress: #6f6df4;
+    --color-progress-track: rgba(110, 109, 244, 0.16);
+}
+
+@layer base {
+    :root {
+        color-scheme: dark;
+        --surface-page:   var(--color-ink-50);
+        --surface-card:   var(--color-ink-200);
+        --surface-card-2: var(--color-ink-300);
+        --surface-input:  var(--color-ink-50);  /* match page so amount rows feel inset, not boxed */
+        --surface-elev:   var(--color-ink-300);
+
+        --text-1: var(--color-ink-900);
+        --text-2: var(--color-ink-800);
+        --text-3: var(--color-ink-700);
+        --text-4: var(--color-ink-600);
+
+        --line-1: rgba(255, 255, 255, 0.04);
+        --line-2: rgba(255, 255, 255, 0.07);
+        --line-3: rgba(255, 255, 255, 0.13);
+
+        --shadow-card: 0 30px 80px -40px rgba(0, 0, 0, 0.75),
+                       0 12px 30px -16px rgba(0, 0, 0, 0.55),
+                       inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+        --warn:        #f6b95a;
+        --warn-bg:     rgba(246, 185, 90, 0.10);
+        --warn-border: rgba(246, 185, 90, 0.30);
+
+        --promo-bg:    rgba(124, 116, 220, 0.10);
+        --promo-border:rgba(140, 130, 240, 0.22);
+        --promo-text:  #cdc8ff;
+    }
+
+    [data-theme='light'] {
+        color-scheme: light;
+        --surface-page:   #fbfbf7;          /* warm off-white */
+        --surface-card:   #ffffff;
+        --surface-card-2: #f4f5ef;
+        --surface-input:  #fbfbf7;          /* match page */
+        --surface-elev:   #ffffff;
+
+        --text-1: #0d100f;
+        --text-2: #3b4047;
+        --text-3: #62686f;
+        --text-4: #9097a0;
+
+        --line-1: rgba(10, 18, 14, 0.06);
+        --line-2: rgba(10, 18, 14, 0.10);
+        --line-3: rgba(10, 18, 14, 0.18);
+
+        --shadow-card: 0 28px 60px -32px rgba(13, 41, 21, 0.18),
+                       0 10px 24px -14px rgba(13, 41, 21, 0.10),
+                       inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+        --warn:        #c47a05;
+        --warn-bg:     rgba(246, 185, 90, 0.16);
+        --warn-border: rgba(246, 185, 90, 0.40);
+
+        --promo-bg:    rgba(110, 109, 244, 0.08);
+        --promo-border:rgba(110, 109, 244, 0.20);
+        --promo-text:  #423db2;
+    }
+
+    html, body { background: var(--surface-page); color: var(--text-1); min-height: 100%; }
+    body { font-family: var(--font-sans); }
+    *:focus-visible { outline: 2px solid var(--color-brand-300); outline-offset: 2px; border-radius: 6px; }
+}
+
+@layer components {
+    .container-edge { max-width: 1180px; margin-inline: auto; padding-inline: 1.5rem; }
+
+    .surface-card   { background: var(--surface-card); }
+    .surface-card-2 { background: var(--surface-card-2); }
+    .surface-input  { background: var(--surface-input); }
+
+    .text-muted-1 { color: var(--text-1); }
+    .text-muted-2 { color: var(--text-2); }
+    .text-muted-3 { color: var(--text-3); }
+    .text-muted-4 { color: var(--text-4); }
+
+    .border-line-1 { border-color: var(--line-1); }
+    .border-line-2 { border-color: var(--line-2); }
+    .border-line-3 { border-color: var(--line-3); }
+
+    /* Big multi-color gradient headline */
+    .text-gradient-brand {
+        background: linear-gradient(95deg, #bff15a 0%, #82e7a5 38%, #6ce7d2 70%, #5acdd6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .spinner {
+        width: 18px; height: 18px; border-radius: 999px;
+        border: 2px solid var(--line-3);
+        border-top-color: var(--color-brand-300);
+        animation: spin 800ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Primary CTA — pill, full-width, large */
+    .cta {
+        display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+        background: var(--color-brand-300); color: var(--color-brand-ink);
+        font-weight: 600;
+        padding: 1.1rem 1.25rem;
+        border-radius: 999px;
+        transition: background 120ms ease-out, transform 120ms ease-out, box-shadow 200ms ease-out;
+        box-shadow: 0 12px 36px -16px rgba(191, 241, 90, 0.55);
+        width: 100%;
+        font-size: 1rem;
+    }
+    .cta:hover { background: var(--color-brand-200); }
+    .cta:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .cta-ghost {
+        background: transparent; color: var(--text-2);
+        box-shadow: inset 0 0 0 1px var(--line-2);
+    }
+    .cta-ghost:hover { color: var(--text-1); background: transparent; box-shadow: inset 0 0 0 1px var(--line-3); }
+
+    /* Currency pill (selector trigger inside amount row) */
+    .currency-pill {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.35rem 0.7rem 0.35rem 0.35rem;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--text-1);
+        transition: background 120ms ease-out;
+    }
+    .currency-pill:hover { background: rgba(255,255,255,0.04); }
+
+    /* Form fields (step 2 + support form) */
+    .field {
+        position: relative;
+        background: var(--surface-input);
+        border-radius: 14px;
+        padding: 0.95rem 1rem 0.85rem;
+        box-shadow: inset 0 0 0 1px var(--line-2);
+        transition: box-shadow 120ms ease-out;
+    }
+    .field:focus-within { box-shadow: inset 0 0 0 1px var(--color-brand-300); }
+    .field input, .field textarea {
+        width: 100%; background: transparent; color: var(--text-1);
+        border: 0; outline: none; font: inherit;
+    }
+    .field input::placeholder, .field textarea::placeholder { color: var(--text-4); }
+    .field-label { font-size: 0.78rem; color: var(--text-3); margin-bottom: 0.15rem; display: block; }
+    .field-chip {
+        position: absolute; top: -8px; left: 12px;
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+        background: var(--surface-card); color: var(--text-2);
+        padding: 2px 8px; border-radius: 6px;
+        box-shadow: inset 0 0 0 1px var(--line-2);
+    }
+
+    /* Chain badge inline */
+    .chain-chip {
+        display: inline-flex; align-items: center; padding: 0 6px; height: 16px;
+        border-radius: 4px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    .chain-chip-btc  { background: rgba(247, 147, 26, 0.15);  color: #b56b00; }
+    .chain-chip-eth  { background: rgba(110, 109, 244, 0.18); color: #4f4cda; }
+    .chain-chip-bsc  { background: rgba(243, 186, 47, 0.18);  color: #a87d05; }
+    .chain-chip-trx  { background: rgba(232, 50, 50, 0.15);   color: #c43838; }
+    .chain-chip-sol  { background: rgba(20, 200, 130, 0.16);  color: #0a8b5b; }
+    .chain-chip-usdt { background: rgba(38, 161, 123, 0.18);  color: #1a7c5c; }
+    .chain-chip-default { background: color-mix(in oklab, var(--text-1), transparent 92%); color: var(--text-2); }
+
+    /* Dark-mode bumps the chip text brightness */
+    :root:not([data-theme='light']) .chain-chip-btc  { color: #ffb14d; }
+    :root:not([data-theme='light']) .chain-chip-eth  { color: #b9b7ff; }
+    :root:not([data-theme='light']) .chain-chip-bsc  { color: #f3ba2f; }
+    :root:not([data-theme='light']) .chain-chip-trx  { color: #ff7a7a; }
+    :root:not([data-theme='light']) .chain-chip-sol  { color: #81e3b6; }
+    :root:not([data-theme='light']) .chain-chip-usdt { color: #58d3a6; }
+    :root:not([data-theme='light']) .chain-chip-default { background: rgba(255, 255, 255, 0.08); }
+
+    /* Page-wide ambient green smoke. Pure CSS, no canvas, no DOM cost. */
+    .page-glow {
+        position: fixed;
+        inset: -10vh -10vw -10vh -10vw;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(40rem 26rem at 50% 38%, rgba(140, 220, 130, 0.12), transparent 70%),
+            radial-gradient(28rem 22rem at 20% 80%, rgba(120, 200, 220, 0.06), transparent 75%),
+            radial-gradient(24rem 18rem at 88% 18%, rgba(150, 220, 110, 0.07), transparent 75%);
+        filter: blur(8px);
+    }
+    [data-theme='light'] .page-glow {
+        background:
+            radial-gradient(48rem 32rem at 50% 32%, rgba(191, 241, 90, 0.20), transparent 70%),
+            radial-gradient(32rem 24rem at 14% 84%, rgba(110, 220, 200, 0.14), transparent 75%),
+            radial-gradient(26rem 20rem at 90% 14%, rgba(140, 130, 240, 0.10), transparent 75%);
+    }
+    [data-theme='light'] .card-halo {
+        background: radial-gradient(closest-side, rgba(191, 241, 90, 0.32), transparent 75%);
+    }
+
+    /* Soft halo behind the card */
+    .card-halo {
+        position: absolute;
+        inset: -80px -120px;
+        z-index: -1;
+        background: radial-gradient(closest-side, rgba(127, 220, 110, 0.18), transparent 75%);
+        filter: blur(28px);
+        pointer-events: none;
+    }
+
+    /* Admin variant: dimmer ambient glow so it doesn't overpower data UI */
+    .page-glow-admin {
+        position: fixed;
+        inset: -10vh -10vw -10vh -10vw;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.5;
+        background:
+            radial-gradient(36rem 22rem at 50% 32%, rgba(140, 220, 130, 0.07), transparent 70%),
+            radial-gradient(24rem 20rem at 18% 78%, rgba(120, 200, 220, 0.04), transparent 75%);
+        filter: blur(10px);
+    }
+
+    /* Legacy alias used by Install + Admin login — same as page-glow */
+    .hero-halo {
+        position: fixed;
+        inset: -10vh -10vw -10vh -10vw;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(40rem 26rem at 50% 38%, rgba(140, 220, 130, 0.12), transparent 70%),
+            radial-gradient(28rem 22rem at 20% 80%, rgba(120, 200, 220, 0.06), transparent 75%),
+            radial-gradient(24rem 18rem at 88% 18%, rgba(150, 220, 110, 0.07), transparent 75%);
+        filter: blur(8px);
+    }
+
+    /* KPI tile: compact card with a brand gradient headline number */
+    .kpi-card {
+        background: var(--surface-card);
+        border: 1px solid var(--line-1);
+        border-radius: 20px;
+        padding: 1rem 1.1rem;
+        box-shadow: var(--shadow-card);
+    }
+    .kpi-card .kpi-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-3);
+    }
+    .kpi-card .kpi-value {
+        margin-top: 0.4rem;
+        font-weight: 700;
+        font-size: 1.7rem;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+    .kpi-card .kpi-value.kpi-gradient {
+        background: linear-gradient(95deg, #bff15a 0%, #82e7a5 38%, #6ce7d2 70%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Admin sidebar — active item bar + lime tinted icon */
+    .admin-nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        color: var(--text-2);
+        font-size: 0.875rem;
+        transition: color 120ms ease-out, background 120ms ease-out;
+    }
+    .admin-nav-item:hover { color: var(--text-1); background: var(--surface-card-2); }
+    .admin-nav-item.is-active {
+        color: var(--text-1);
+        font-weight: 600;
+        background: var(--surface-card-2);
+    }
+    .admin-nav-item.is-active::before {
+        content: '';
+        position: absolute;
+        left: -2px;
+        top: 6px;
+        bottom: 6px;
+        width: 3px;
+        border-radius: 3px;
+        background: var(--color-progress);
+    }
+    .admin-nav-item.is-active .admin-nav-icon { color: var(--color-brand-300); }
+    .admin-nav-icon { color: var(--text-3); flex-shrink: 0; }
+
+    /* Help-center article prose */
+    .prose-help { color: var(--text-2); line-height: 1.7; font-size: 16px; }
+    .prose-help > * + * { margin-top: 1.1em; }
+    .prose-help h2 { font-size: 1.6rem; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; margin-top: 2em; line-height: 1.25; }
+    .prose-help h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-1); margin-top: 1.6em; }
+    .prose-help p  { color: var(--text-2); }
+    .prose-help strong { color: var(--text-1); }
+    .prose-help em { color: var(--text-2); font-style: italic; }
+    .prose-help a { color: var(--color-progress); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .prose-help a:hover { color: var(--text-1); }
+    .prose-help ul, .prose-help ol { padding-left: 1.5em; }
+    .prose-help li + li { margin-top: 0.4em; }
+    .prose-help li { color: var(--text-2); }
+    .prose-help code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        padding: 0.15em 0.45em;
+        border-radius: 6px;
+        background: var(--surface-card-2);
+        color: var(--text-1);
+        box-shadow: inset 0 0 0 1px var(--line-2);
+    }
+    .prose-help pre {
+        background: var(--surface-card-2);
+        border: 1px solid var(--line-2);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        color: var(--text-1);
+    }
+    .prose-help pre code { background: transparent; box-shadow: none; padding: 0; }
+    .prose-help blockquote {
+        border-left: 3px solid var(--color-brand-300);
+        padding: 0.5em 1em;
+        background: var(--surface-card-2);
+        border-radius: 0 12px 12px 0;
+        color: var(--text-2);
+        font-style: italic;
+    }
+}

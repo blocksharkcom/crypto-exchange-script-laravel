@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+    <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0a0c10"/>
+            <stop offset="1" stop-color="#14171c"/>
+        </linearGradient>
+        <radialGradient id="glow" cx="50%" cy="38%" r="50%">
+            <stop offset="0" stop-color="#bff15a" stop-opacity="0.32"/>
+            <stop offset="1" stop-color="#bff15a" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="brand" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#bff15a"/>
+            <stop offset="0.5" stop-color="#82e7a5"/>
+            <stop offset="1" stop-color="#6ce7d2"/>
+        </linearGradient>
+        <linearGradient id="mark" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#bff15a"/>
+            <stop offset="1" stop-color="#7be09a"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="1200" height="630" fill="url(#bg)"/>
+    <ellipse cx="600" cy="240" rx="540" ry="320" fill="url(#glow)"/>
+
+    <!-- Brand mark -->
+    <g transform="translate(108 88)">
+        <rect width="120" height="120" rx="32" fill="url(#mark)"/>
+        <path d="M40 40h28a12 12 0 0 1 12 12 12 12 0 0 1-12 12H40l12 12M80 80H52a12 12 0 0 1-12-12 12 12 0 0 1 12-12h28l-12-12"
+            stroke="#0a0a0c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <text x="246" y="174" font-family="Inter, sans-serif" font-size="40" font-weight="700" fill="#f0f2f6">CrossSwap</text>
+
+    <!-- Headline -->
+    <text x="108" y="320" font-family="Inter, sans-serif" font-weight="800" font-size="92" letter-spacing="-2" fill="#f0f2f6">Exchange any crypto,</text>
+    <text x="108" y="430" font-family="Inter, sans-serif" font-weight="800" font-size="92" letter-spacing="-2" fill="url(#brand)">instantly.</text>
+
+    <text x="108" y="500" font-family="Inter, sans-serif" font-size="28" fill="#a8afbd">Cross-chain swaps across 30+ blockchains. No account. No custody.</text>
+
+    <!-- Lime CTA chip -->
+    <g transform="translate(108 542)">
+        <rect width="240" height="56" rx="28" fill="#bff15a"/>
+        <text x="120" y="36" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="20" fill="#0a0a0c">Open the app →</text>
+    </g>
+
+    <!-- Decorative coin chips bottom-right -->
+    <g transform="translate(820 444)">
+        <rect width="290" height="92" rx="22" fill="#14171c" stroke="#1a1d23" stroke-width="2"/>
+        <circle cx="46" cy="46" r="20" fill="#f7931a"/>
+        <text x="46" y="52" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="16" fill="#0a0a0c">BTC</text>
+        <text x="84" y="40" font-family="Inter, sans-serif" font-weight="700" font-size="20" fill="#f0f2f6">0.1 BTC</text>
+        <text x="84" y="64" font-family="Inter, sans-serif" font-size="13" fill="#6b7281">→ 3.75 ETH</text>
+        <circle cx="244" cy="46" r="20" fill="#627eea"/>
+        <text x="244" y="52" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="16" fill="#ffffff">ETH</text>
+    </g>
+</svg>

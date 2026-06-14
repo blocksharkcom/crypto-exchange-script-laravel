@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>Troubleshooting &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html" class="active">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">Troubleshooting</h1>
+      <p class="lede">Quick recipes for the issues operators hit most often. If your problem isn't covered here, check <code>storage/logs/laravel.log</code> first &mdash; it almost always points at the root cause.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      Jump to:
+      <a href="#updating">Updating CrossSwap</a> &middot;
+      <a href="#common-errors">Common errors</a> &middot;
+      <a href="#stuck">Stuck transactions</a> &middot;
+      <a href="#api-key">ChangeNOW key</a> &middot;
+      <a href="#queue">Queue worker</a> &middot;
+      <a href="#mail">Mail</a> &middot;
+      <a href="#migrations">Migrations</a> &middot;
+      <a href="#permissions">Permissions</a> &middot;
+      <a href="#mixed">HTTPS mixed content</a> &middot;
+      <a href="#installer">Installer loop</a> &middot;
+      <a href="#admin">Admin login</a>
+    </div>
+
+    <section id="updating">
+      <h2>Updating CrossSwap</h2>
+      <p>CrossSwap updates are delivered as a fresh archive on your Envato &ldquo;Downloads&rdquo; page. Every update is additive &mdash; you drop the new files over the old ones and run migrations.</p>
+
+      <div class="doc-callout doc-callout-warn">
+        <strong>Always back up <code>.env</code> and the database before upgrading.</strong> If anything goes wrong, restoring is a one-line move-back; without a backup, your only option is starting from scratch.
+      </div>
+
+      <h3 id="updating-steps">Step-by-step</h3>
+      <ol>
+        <li><strong>Back up</strong> &mdash; copy <code>.env</code> and your database aside:
+          <pre><code>cp .env .env.backup-$(date +%F)
+
+# SQLite
+cp database/database.sqlite database/database.sqlite.backup-$(date +%F)
+
+# MySQL
+mysqldump -u crossswap -p crossswap &gt; backup-$(date +%F).sql
+
+# PostgreSQL
+pg_dump crossswap &gt; backup-$(date +%F).sql</code></pre>
+        </li>
+        <li><strong>Put the site into maintenance mode</strong> so visitors see a friendly notice while you upload:
+          <pre><code>php artisan down --refresh=30 --retry=60</code></pre>
+        </li>
+        <li><strong>Drop the new files in place</strong> &mdash; preserve <code>.env</code> and the entire <code>storage/</code> directory. Everything else can be overwritten safely. (Most operators use <code>rsync --exclude</code> or unzip with overwrite.)</li>
+        <li><strong>Run migrations</strong> &mdash; the migration runner is idempotent, so it's safe to run even when there's nothing new:
+          <pre><code>php artisan migrate --force</code></pre>
+        </li>
+        <li><strong>Rebuild assets only if the changelog says so</strong> &mdash; the archive ships a compiled <code>public/build/</code> bundle. Skip this step otherwise.
+          <pre><code>npm install &amp;&amp; npm run build</code></pre>
+        </li>
+        <li><strong>Clear caches</strong> so the new config, routes, and views are picked up:
+          <pre><code>php artisan optimize:clear</code></pre>
+        </li>
+        <li><strong>Restart the queue worker</strong> so it loads the new code:
+          <pre><code>php artisan horizon:terminate
+# or, if you use queue:work directly:
+sudo systemctl restart crossswap-horizon</code></pre>
+        </li>
+        <li><strong>Bring the site back up</strong>:
+          <pre><code>php artisan up</code></pre>
+        </li>
+        <li><strong>Verify</strong> &mdash; sign into the admin panel, confirm the dashboard renders, and place a tiny test swap to confirm the upstream API still works.</li>
+      </ol>
+    </section>
+
+    <section id="common-errors">
+      <h2>Common errors &amp; copy-paste fixes</h2>
+      <p>Symptoms first, fixes second. Most of these resolve in under a minute.</p>
+
+      <h3 id="err-419">419 PAGE EXPIRED</h3>
+      <p>Symptom: form submissions (sign-in, ticket reply, admin save) bounce back to a &ldquo;Page Expired&rdquo; error page.</p>
+      <p>Cause: CSRF token mismatch &mdash; usually a stale session, a session-driver misconfiguration, or a domain mismatch.</p>
+      <pre><code># 1. Clear session storage:
+php artisan session:flush      # file/database driver
+redis-cli flushdb              # if SESSION_DRIVER=redis
+
+# 2. Rebuild config + view cache:
+php artisan optimize:clear
+
+# 3. Confirm SESSION_DOMAIN matches APP_URL:
+#    SESSION_DOMAIN=.yourdomain.tld   # leading dot for subdomains
+#    APP_URL=https://yourdomain.tld
+
+# 4. Hard-refresh the browser (Cmd+Shift+R / Ctrl+F5).</code></pre>
+
+      <h3 id="err-500">500 server error</h3>
+      <p>Symptom: every request returns a blank or branded &ldquo;500&rdquo; page.</p>
+      <p>The exception is always in <code>storage/logs/laravel.log</code>:</p>
+      <pre><code>tail -n 100 storage/logs/laravel.log</code></pre>
+      <p>If that log is empty, the failure happened before Laravel could boot. Check the web server log:</p>
+      <pre><code>tail -n 100 /var/log/nginx/error.log
+# or
+tail -n 100 /var/log/apache2/error.log</code></pre>
+      <p>Most common causes in order of frequency: <code>APP_KEY</code> blank in <code>.env</code> (run <code>php artisan key:generate</code>), missing PHP extension, wrong DB credentials, and read-only <code>storage/</code>.</p>
+
+      <h3 id="err-perm-denied">Permission denied on storage/</h3>
+      <p>Symptom: <em>&ldquo;The stream or file could not be opened&rdquo;</em> or <em>&ldquo;failed to open stream: Permission denied&rdquo;</em>.</p>
+      <pre><code># Replace www-data with your actual PHP-FPM user if different:
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo find storage bootstrap/cache -type d -exec chmod 775 {} \;
+sudo find storage bootstrap/cache -type f -exec chmod 664 {} \;
+php artisan optimize:clear</code></pre>
+
+      <h3 id="err-changenow-401">ChangeNOW returned 401</h3>
+      <p>Symptom: every swap-create or estimate fails with <em>&ldquo;Service is temporarily unavailable&rdquo;</em>; <code>storage/logs/laravel.log</code> shows <em>&ldquo;Authentication failed&rdquo;</em> or a 401 from <code>api.changenow.io</code>.</p>
+      <pre><code># 1. Confirm the key is set in the admin panel:
+#    /admin/settings &rarr; API &rarr; ChangeNOW API key.
+
+# 2. Re-copy it from https://changenow.io/affiliate
+#    (no leading or trailing whitespace).
+
+# 3. Verify the key against the live API:
+curl -H "x-changenow-api-key: YOUR-KEY" \
+  https://api.changenow.io/v2/exchange/currencies | head
+
+# 4. If the partner account is brand new, allow 5-10 minutes
+#    for the key to activate on ChangeNOW's side.</code></pre>
+
+      <h3 id="err-mixed">HTTPS mixed content</h3>
+      <p>Symptom: the browser console shows <em>&ldquo;Mixed Content: The page was loaded over HTTPS, but requested an insecure resource&rdquo;</em> &mdash; usually images, fonts, or API calls over plain HTTP.</p>
+      <pre><code># 1. Set APP_URL to your https domain in .env:
+APP_URL=https://yourdomain.tld
+
+# 2. Force https in AppServiceProvider::boot()
+#    (already wired when APP_ENV=production).
+
+# 3. If behind Cloudflare / a load balancer,
+#    configure TrustProxies to honour X-Forwarded-Proto.
+
+# 4. Clear caches:
+php artisan optimize:clear</code></pre>
+    </section>
+
+    <section id="stuck">
+      <h2>Stuck transactions</h2>
+      <p>A swap that sits in <code>waiting</code> or <code>confirming</code> longer than the configured thresholds is automatically marked <code>stuck_flagged = true</code> and surfaced in <strong>Admin &rarr; Stuck swaps</strong>. To investigate:</p>
+      <ol>
+        <li>Open the transaction in the admin panel.</li>
+        <li>Compare the <code>payin_hash</code> against the source blockchain explorer.</li>
+        <li>If the deposit never reached the payin address, the customer probably sent on the wrong network &mdash; issue a manual refund through the ChangeNOW partner dashboard.</li>
+        <li>If the deposit arrived but the swap isn't progressing, contact ChangeNOW support with the <code>provider_id</code>.</li>
+      </ol>
+      <p>Tune the thresholds in <code>config/swapforge.php &rarr; tx_stuck</code>:</p>
+      <pre><code>'tx_stuck' =&gt; [
+    'waiting_minutes'    =&gt; 180,
+    'confirming_minutes' =&gt; 360,
+],</code></pre>
+    </section>
+
+    <section id="api-key">
+      <h2>ChangeNOW API key not configured (or rejected)</h2>
+      <p>Symptoms: every estimate or create request fails with a 401/403 from upstream; the storefront shows <em>&ldquo;Service is temporarily unavailable&rdquo;</em>.</p>
+      <ol>
+        <li>Open <strong>Admin &rarr; Settings &rarr; API management</strong> and confirm the key is set.</li>
+        <li>Re-copy the key from the <a href="https://changenow.io/affiliate" target="_blank" rel="noopener noreferrer">ChangeNOW partner dashboard</a> (no leading or trailing whitespace).</li>
+        <li>Check <strong>Admin &rarr; API logs</strong> &mdash; recent failed calls log the raw upstream response.</li>
+        <li>If the partner account was just created, allow 5&ndash;10 minutes for the key to activate.</li>
+      </ol>
+      <p>To verify the key against the live API from the command line:</p>
+      <pre><code>curl -H "x-changenow-api-key: YOUR-KEY" \
+  https://api.changenow.io/v2/exchange/currencies</code></pre>
+    </section>
+
+    <section id="queue">
+      <h2>Queue worker not running</h2>
+      <p>If swaps stay <code>waiting</code> forever and the admin <strong>Horizon</strong> page is empty:</p>
+      <ol>
+        <li>Confirm Horizon is running: <code>ps aux | grep horizon</code>.</li>
+        <li>If not, start it manually: <code>php artisan horizon</code>. For production, supervise it with systemd or supervisord.</li>
+        <li>Check <code>storage/logs/horizon.log</code> for fatal startup errors.</li>
+        <li>If Redis is in use, confirm it is reachable: <code>redis-cli ping</code> should return <code>PONG</code>.</li>
+        <li>Confirm the cron entry exists and runs every minute: <code>crontab -l</code>.</li>
+      </ol>
+      <div class="callout warn">
+        <strong>Tip.</strong> After deploying a code change, run <code>php artisan horizon:terminate</code> so a fresh worker picks up the new code.
+      </div>
+    </section>
+
+    <section id="mail">
+      <h2>Mail not sending</h2>
+      <ul>
+        <li>Run the SMTP test: <code>php artisan tinker</code> &rarr; <code>Mail::raw('test', fn ($m) =&gt; $m-&gt;to('you@you.com')-&gt;subject('hi'));</code></li>
+        <li>Inspect <code>storage/logs/laravel.log</code> for transport errors.</li>
+        <li>Verify your <code>MAIL_FROM_ADDRESS</code> uses a domain that passes SPF/DKIM &mdash; most providers reject anonymous senders.</li>
+        <li>For Gmail / Google Workspace, use an <a href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noopener noreferrer">App Password</a>, not your real password.</li>
+      </ul>
+    </section>
+
+    <section id="migrations">
+      <h2>Migrations failed</h2>
+      <p>If the installer's database step fails partway through, or you see <em>&ldquo;SQLSTATE&hellip; relation already exists&rdquo;</em>:</p>
+      <ol>
+        <li>Confirm the DB user has <code>CREATE</code>, <code>ALTER</code>, and <code>DROP</code> privileges.</li>
+        <li>Drop the database and recreate it empty:
+          <pre><code># MySQL
+mysql -u root -p -e "DROP DATABASE crossswap; CREATE DATABASE crossswap CHARACTER SET utf8mb4;"
+
+# PostgreSQL
+sudo -u postgres psql -c "DROP DATABASE crossswap; CREATE DATABASE crossswap;"
+
+# SQLite
+rm database/database.sqlite &amp;&amp; touch database/database.sqlite</code></pre>
+        </li>
+        <li>Re-run from the CLI to see the full error:
+          <pre><code>php artisan migrate --force</code></pre>
+        </li>
+        <li>If a migration mentions a missing PHP extension (e.g. <code>bcmath</code>), install it via <code>apt</code> or your hosting panel.</li>
+      </ol>
+    </section>
+
+    <section id="permissions">
+      <h2>Permissions errors on storage/ and bootstrap/cache/</h2>
+      <p>Symptoms: <em>&ldquo;The stream or file could not be opened&rdquo;</em>, blank white screen, or 500 from the very first request.</p>
+      <ol>
+        <li>Make sure the web server user (e.g. <code>www-data</code>, <code>nginx</code>, or <code>apache</code>) owns the writable directories:
+          <pre><code>sudo chown -R www-data:www-data storage bootstrap/cache</code></pre>
+        </li>
+        <li>Set sane permissions:
+          <pre><code>find storage bootstrap/cache -type d -exec chmod 775 {} \;
+find storage bootstrap/cache -type f -exec chmod 664 {} \;</code></pre>
+        </li>
+        <li>On shared hosting where you cannot change ownership, use <code>777</code> as a last resort.</li>
+        <li>Clear caches once permissions are right:
+          <pre><code>php artisan cache:clear
+php artisan config:clear
+php artisan view:clear</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section id="mixed">
+      <h2>HTTPS mixed-content warnings</h2>
+      <p>If the browser console shows <em>&ldquo;Mixed Content: The page was loaded over HTTPS, but requested an insecure resource&rdquo;</em>:</p>
+      <ol>
+        <li>Set <code>APP_URL=https://yourdomain.tld</code> in <code>.env</code>.</li>
+        <li>Force the scheme in <code>App\Providers\AppServiceProvider::boot()</code>:
+          <pre><code>if ($this-&gt;app-&gt;environment('production')) {
+    \\Illuminate\\Support\\Facades\\URL::forceScheme('https');
+}</code></pre>
+        </li>
+        <li>If you're behind Cloudflare or a load balancer, configure the <code>TrustProxies</code> middleware so Laravel honours the <code>X-Forwarded-Proto</code> header.</li>
+        <li>Clear caches: <code>php artisan config:clear &amp;&amp; php artisan view:clear</code>.</li>
+      </ol>
+    </section>
+
+    <section id="installer">
+      <h2>Installer redirect loop</h2>
+      <p>If the site keeps redirecting to <code>/install</code> after you completed the wizard, the lock file probably wasn't written. Create it manually:</p>
+      <pre><code>touch storage/app/installed.lock
+chmod 644 storage/app/installed.lock</code></pre>
+      <p>If the opposite is true and you can't reach the installer because the lock file pre-exists on a fresh install, move it aside:</p>
+      <pre><code>mv storage/app/installed.lock storage/app/installed.lock.bak</code></pre>
+    </section>
+
+    <section id="admin">
+      <h2>Admin login fails</h2>
+      <ul>
+        <li>Double-check the admin email in the <code>admins</code> table.</li>
+        <li>Reset the password with a fresh bcrypt hash:
+          <pre><code>php artisan tinker --execute="\
+  \\App\\Models\\Admin::where('email','you@example.com')-&gt;first()\
+  -&gt;update(['password' =&gt; bcrypt('new-password-12chars')]);"</code></pre>
+        </li>
+        <li>If 2FA is enabled and you've lost the device, clear the <code>two_factor_secret</code> column to disable it.</li>
+        <li>If the issue is a CSRF token mismatch, clear the session storage: <code>php artisan session:flush</code> (or <code>redis-cli flushdb</code> if you store sessions in Redis).</li>
+      </ul>
+    </section>
+
+    <section id="white">
+      <h2>White screen / 500 error after upload</h2>
+      <ol>
+        <li>Check the permissions on <code>storage/</code> and <code>bootstrap/cache/</code> (see above).</li>
+        <li>Look at <code>storage/logs/laravel.log</code> &mdash; the exception will be there.</li>
+        <li>If the log is empty, check your web server's error log (<code>/var/log/nginx/error.log</code> or <code>/var/log/apache2/error.log</code>).</li>
+        <li>Make sure <code>APP_KEY</code> is set in <code>.env</code> &mdash; if blank, the app fails before logging. Re-generate with <code>php artisan key:generate</code>.</li>
+      </ol>
+    </section>
+  </main>
+</div>
+</body>
+</html>

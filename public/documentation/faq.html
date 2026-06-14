@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>FAQ &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html" class="active">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">Frequently asked questions</h1>
+      <p class="lede">The customer-facing questions visible on the storefront, plus a handful of operator-facing ones about updates, hosting, refunds, and KYC.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      Jump to:
+      <a href="#customer">Customer FAQ</a> &middot;
+      <a href="#operator">Operator FAQ</a>
+    </div>
+
+    <div class="doc-grid-2">
+      <figure class="doc-figure">
+        <img src="img/help-center.png" alt="CrossSwap help center page listing customer-facing FAQ topics.">
+        <figcaption>These same questions appear on the public Help Center, fully translatable through <code>lang/&lt;locale&gt;/site.php</code>.</figcaption>
+      </figure>
+      <figure class="doc-figure">
+        <img src="img/help-article.png" alt="CrossSwap help article page showing a single question and answer with related links.">
+        <figcaption>Each FAQ entry doubles as a deep-linkable help-center article.</figcaption>
+      </figure>
+    </div>
+
+    <section id="customer">
+      <h2>Customer FAQ</h2>
+      <p>These six questions are pulled verbatim from <code>lang/en/site.php &rarr; faq.*</code> and are the ones your visitors see on the public site.</p>
+
+      <h3 id="q-account">Do I need an account?</h3>
+      <p>No. There's no sign-up or wallet connection. Just enter your receive address and send your deposit.</p>
+
+      <h3 id="q-time">How long does an exchange take?</h3>
+      <p>Most swaps complete in 5 to 30 minutes. Chains with slower confirmations may take longer.</p>
+
+      <h3 id="q-rate">What's the difference between floating and fixed rate?</h3>
+      <p>Floating uses the market rate at the moment your deposit confirms. Fixed locks the rate at the moment you start the swap.</p>
+
+      <h3 id="q-slow">What if my swap takes too long?</h3>
+      <p>Open a ticket from the Support page with your transaction ID. We'll trace it on-chain and resolve quickly.</p>
+
+      <h3 id="q-limits">Are there limits?</h3>
+      <p>Each pair has its own minimum. Maximum depends on available liquidity and is shown live during the swap.</p>
+
+      <h3 id="q-fees">How are fees calculated?</h3>
+      <p>Fees are baked into the displayed exchange rate. No hidden surprises before you confirm.</p>
+
+    </section>
+
+    <section id="operator">
+      <h2>Operator FAQ</h2>
+      <p>Questions buyers ask the most after purchasing the script.</p>
+
+      <h3 id="q-update">How do I update CrossSwap to a new version?</h3>
+      <ol>
+        <li>Back up <code>.env</code>, <code>storage/</code>, and your database.</li>
+        <li>Re-download the latest archive from your Envato purchases page.</li>
+        <li>Overwrite the files <strong>except</strong> <code>.env</code> and <code>storage/</code>.</li>
+        <li>Run the upgrade routine:
+          <pre><code>composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan view:clear
+php artisan config:clear
+php artisan horizon:terminate</code></pre>
+        </li>
+        <li>Hard-refresh the storefront and confirm Horizon shows new workers.</li>
+      </ol>
+      <p>The migration runner is idempotent &mdash; running it twice will not re-apply already-applied migrations.</p>
+
+      <h3 id="q-refunds">How do refunds work?</h3>
+      <p>CrossSwap itself never holds customer funds, so refunds are issued by ChangeNOW. When a customer needs one (wrong network, wrong address, expired rate, etc.):</p>
+      <ol>
+        <li>Open the transaction in <strong>Admin &rarr; Transactions</strong> and copy the <code>provider_id</code>.</li>
+        <li>Log into the ChangeNOW partner dashboard and use the &ldquo;Request refund&rdquo; flow on that transaction.</li>
+        <li>ChangeNOW will ask the customer for a refund address (different from the receive address). The address-entry step on the public storefront already collects a <code>refund_address</code> when the customer enables fixed-rate, which speeds this up.</li>
+        <li>Once ChangeNOW processes the refund, the CrossSwap transaction status updates automatically through the next polling pass.</li>
+      </ol>
+
+      <h3 id="q-kyc">Is CrossSwap KYC'd?</h3>
+      <p>No. CrossSwap is a thin storefront on top of ChangeNOW, which is a non-custodial swap provider that doesn't require KYC for the vast majority of swap pairs and amounts. ChangeNOW may individually flag suspicious transactions and ask the sender to verify identity per their <a href="https://changenow.io/policy" target="_blank" rel="noopener noreferrer">AML policy</a>, but you as the operator are not handling any KYC paperwork yourself.</p>
+      <p>That said: depending on your jurisdiction you may still need to publish a privacy policy and an AML notice. Set the URLs under <a href="configure.html#legal">Settings &rarr; Legal</a>.</p>
+
+      <h3 id="q-shared">Can I deploy CrossSwap on shared hosting?</h3>
+      <p>Yes, with two caveats:</p>
+      <ul>
+        <li>You need PHP 8.2+ with the extensions listed under <a href="install.html#requirements">Requirements</a>. Most modern cPanel / Plesk / CyberPanel hosts offer this.</li>
+        <li>You need either a long-lived process (rare on shared hosting) or a cron job that runs every minute. Without it, status polling will not work and swaps stall at &ldquo;Waiting&rdquo;.</li>
+      </ul>
+      <p>For a smoother experience on a budget, a $5-$10/month VPS with SSH access is much easier than wrestling with shared-hosting quirks.</p>
+
+      <h3 id="q-license">Where can I see my licence terms?</h3>
+      <p>The bundled <a href="../../LICENSE.md">LICENSE.md</a> covers both the Regular and Extended Envato licences and the conditions under which you may rebrand or sell access.</p>
+
+      <h3 id="q-source">Is the source code obfuscated?</h3>
+      <p>No. The PHP source ships unencoded &mdash; strict typing, full namespaces, fully readable. The compiled JS bundle is minified by Vite as is normal for production builds; the un-minified source under <code>resources/js/</code> is also included so you can rebuild.</p>
+
+      <h3 id="q-where">Where do I report bugs?</h3>
+      <p>Use the comments or item-support tab on the CrossSwap CodeCanyon listing. Include the version, PHP version, and a snippet from <code>storage/logs/laravel.log</code>.</p>
+    </section>
+
+    <section id="operator-extra">
+      <h2>More operator questions</h2>
+      <p>The questions buyers ask once they're past the first install. See <a href="troubleshooting.html">Troubleshooting</a> for symptom-driven fixes; this section answers &ldquo;how do I&hellip;&rdquo;.</p>
+
+      <h3 id="q-update-process">How do I update CrossSwap?</h3>
+      <p>The short version: back up <code>.env</code> and the database, drop the new files in (preserve <code>.env</code> and <code>storage/</code>), then run:</p>
+      <pre><code>php artisan migrate --force
+php artisan optimize:clear
+php artisan horizon:terminate</code></pre>
+      <p>Only run <code>npm run build</code> if the changelog mentions asset changes &mdash; the archive ships a compiled bundle. Full step-by-step is on the <a href="troubleshooting.html#updating">Troubleshooting page</a>.</p>
+
+      <h3 id="q-add-language">Can I add a new language?</h3>
+      <p>Yes &mdash; CrossSwap is fully translatable. Copy <code>lang/en/site.php</code> to <code>lang/&lt;code&gt;/site.php</code>, translate the values, add the locale code to <code>config/swapforge.php &rarr; languages</code>, then run <code>php artisan optimize:clear</code>. The detailed walkthrough lives on the <a href="configure.html#translations">Configuration page</a>.</p>
+
+      <h3 id="q-homepage-copy">Where do I edit the homepage copy?</h3>
+      <p>Two places, depending on what you want to change:</p>
+      <ul>
+        <li><strong>Marketing sections</strong> (Highlights, Reviews, Stats, How it works) &mdash; <code>/admin/content</code> with per-locale tabs. No code required.</li>
+        <li><strong>Hero headline / tagline / nav copy</strong> &mdash; <code>lang/&lt;locale&gt;/site.php</code> under the <code>hero.*</code> and <code>nav.*</code> keys. After editing, run <code>php artisan optimize:clear</code>.</li>
+      </ul>
+
+      <h3 id="q-theme-colours">How do I change theme colours?</h3>
+      <p>For the primary CTA only, use <strong>Admin &rarr; Settings &rarr; Theme &rarr; Primary colour</strong> &mdash; no rebuild needed. For the full palette (brand 50&ndash;700, ink scale, accents), edit the <code>@theme</code> block in <code>resources/css/app.css</code> and run <code>npm run build</code>. Both flows are documented on the <a href="customize.html#colours">Customization page</a>.</p>
+
+      <h3 id="q-customer-emails">Where are my customer emails?</h3>
+      <p>Transactional emails (receipts, ticket replies, recurring runs) are sent via the SMTP credentials in <strong>Admin &rarr; Settings &rarr; SMTP</strong>. The <strong>Send test email</strong> button on that page round-trips a real message so you can confirm delivery. If mail isn't arriving, check <code>storage/logs/laravel.log</code> for transport errors and verify your <code>MAIL_FROM_ADDRESS</code> passes SPF/DKIM for the sending domain.</p>
+
+      <h3 id="q-disable-chat">How do I disable the AI chat widget?</h3>
+      <p>Open <strong>Admin &rarr; Settings &rarr; AI</strong> and set <strong>Provider</strong> to <code>none</code>, then hit Save. The floating chat bubble is removed from the public storefront immediately &mdash; the storefront checks the provider on render and skips the widget entirely when disabled. To re-enable later, set the provider back to <code>openai</code> or <code>anthropic</code> and paste the key.</p>
+
+      <h3 id="q-ssl">Why isn't my SSL working?</h3>
+      <p>The most common causes:</p>
+      <ul>
+        <li><code>APP_URL</code> in <code>.env</code> still starts with <code>http://</code> &mdash; switch to <code>https://</code> and run <code>php artisan config:clear</code>.</li>
+        <li>Behind Cloudflare or a load balancer &mdash; configure the <code>TrustProxies</code> middleware to honour <code>X-Forwarded-Proto</code>, otherwise Laravel keeps generating <code>http://</code> URLs internally.</li>
+        <li>Mixed content from a hard-coded <code>http://</code> resource &mdash; check the browser console; the offending URL will be flagged.</li>
+        <li>Certificate not yet issued &mdash; for Let's Encrypt, give Certbot a few seconds; for Cloudflare, ensure the SSL mode is at least <strong>Full</strong>, not <strong>Flexible</strong> with self-signed origin.</li>
+      </ul>
+
+      <h3 id="q-sqlite-to-mysql">How do I migrate from SQLite to MySQL?</h3>
+      <p>SQLite is great for installing fast, but you'll want MySQL or PostgreSQL once traffic picks up. The clean approach:</p>
+      <ol>
+        <li>Create the empty MySQL database and a user with full privileges on it.</li>
+        <li>Export the SQLite data:
+          <pre><code>php artisan db:dump --database=sqlite &gt; backup.sql
+# or use the bundled dumper:
+sqlite3 database/database.sqlite .dump &gt; backup.sql</code></pre>
+        </li>
+        <li>Update <code>.env</code>:
+          <pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=crossswap
+DB_USERNAME=crossswap
+DB_PASSWORD=...</code></pre>
+        </li>
+        <li>Run migrations against the empty MySQL database, then import the data:
+          <pre><code>php artisan migrate --force
+mysql -u crossswap -p crossswap &lt; backup.sql</code></pre>
+        </li>
+        <li>Clear caches and restart Horizon:
+          <pre><code>php artisan optimize:clear
+php artisan horizon:terminate</code></pre>
+        </li>
+      </ol>
+      <div class="doc-callout doc-callout-warn">
+        <strong>Back up first.</strong> Always copy <code>database/database.sqlite</code> and <code>.env</code> aside before touching either. If anything goes wrong, restoring is a one-line move-back.
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

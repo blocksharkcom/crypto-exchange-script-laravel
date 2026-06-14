@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Official documentation for CrossSwap — installation, configuration, customization, API, and troubleshooting.">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html" class="active">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span>
+      <span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">CrossSwap Documentation</h1>
+      <p class="lede">Welcome. CrossSwap is a self-hosted cross-chain swap front end powered by Laravel 12, Inertia, and React 19. This guide walks you through everything from server requirements to the admin panel and the internal API.</p>
+    </header>
+
+    <figure class="doc-figure">
+      <img src="img/home-hero.png" alt="CrossSwap storefront homepage with the swap card front and centre.">
+      <figcaption>The default CrossSwap storefront &mdash; instant swaps with no account required.</figcaption>
+    </figure>
+
+    <div class="doc-callout">
+      <strong>Quick start.</strong> Set up CrossSwap in under 10 minutes &mdash; head to the <a href="install.html#installer">web installer walkthrough</a> and you'll be live by the end of your coffee.
+    </div>
+
+    <div class="doc-creds">
+      <h4>Try the live demo</h4>
+      <p style="margin:0; font-size:13px; color: var(--fg-mute);">
+        Skip the install &mdash; the full product is running at
+        <a href="https://cross-swap.blockshark.com" target="_blank" rel="noopener noreferrer">cross-swap.blockshark.com</a>.
+        Sign in with either of the demo accounts below:
+      </p>
+      <div class="cred-row">
+        <span><b>Admin:</b> admin@demo.com</span>
+        <span><b>Customer:</b> user@demo.com</span>
+        <span><b>Password:</b> password!321</span>
+      </div>
+    </div>
+
+    <section id="whats-new">
+      <h2>What's new in 1.1.0</h2>
+      <p>The 1.1.0 release lands a major content-management upgrade plus several storefront polish wins. Full notes live in the bundled <a href="../../CHANGELOG.md">CHANGELOG.md</a>.</p>
+      <ul>
+        <li><strong>Multi-locale Pages CMS</strong> &mdash; one record per page, translated title/excerpt/body per language. Public <code>/p/{slug}</code> resolves the active locale with sane fallbacks.</li>
+        <li><strong>Content CMS</strong> &mdash; admins edit the four homepage marketing sections (Highlights, Reviews, Stats, How it works) per locale with no code.</li>
+        <li><strong>Markdown editor</strong> &mdash; the admin Pages screen ships a tabbed Write/Preview editor with a toolbar; no external dependency.</li>
+        <li><strong>Rate slider</strong> &mdash; the limit-order form now uses a slider from -50% to +200% around the live market rate, with quick chips.</li>
+        <li><strong>Typewriter headline</strong> &mdash; the homepage hero cycles through four localised taglines and respects <code>prefers-reduced-motion</code>.</li>
+      </ul>
+    </section>
+
+    <section id="quick-links">
+      <h2>Quick links</h2>
+      <div class="doc-quick-grid">
+        <a class="doc-quick-card" href="install.html">Installation<span>Requirements, browser installer, queue, scheduler.</span></a>
+        <a class="doc-quick-card" href="configure.html">Configuration<span>Brand, languages, currency lists, ChangeNOW key, AI chat.</span></a>
+        <a class="doc-quick-card" href="customize.html">Customization<span>Logo, theme tokens, translations, email templates.</span></a>
+        <a class="doc-quick-card" href="api.html">API reference<span>REST proxy for exchange, support, chat, limit orders.</span></a>
+        <a class="doc-quick-card" href="faq.html">FAQ<span>Common questions about updates, languages, hosting.</span></a>
+        <a class="doc-quick-card" href="troubleshooting.html">Troubleshooting<span>Stuck swaps, 419 errors, mail delivery, HTTPS.</span></a>
+      </div>
+    </section>
+
+    <section id="what">
+      <h2>What is CrossSwap?</h2>
+      <p>CrossSwap is a complete white-label cryptocurrency exchange storefront. Visitors can swap between 900+ tokens without creating an account or connecting a wallet. Behind the scenes, CrossSwap proxies the ChangeNOW partner API, signs transactions, tracks status, and provides a polished React-based UI plus a full admin panel for operators.</p>
+      <p>The application ships ready for production: queue workers, scheduled jobs, audit logging, role-based admins, multi-language storefront, ticket-based support, and a one-time browser installer all included.</p>
+    </section>
+
+    <section id="contents">
+      <h2>Table of contents</h2>
+      <div class="toc-grid">
+        <div class="toc-card">
+          <a href="install.html">Installation</a>
+          <p>Server requirements, hosting compatibility, the browser installer walked through screen-by-screen, manual install, HTTPS, and a post-install checklist.</p>
+        </div>
+        <div class="toc-card">
+          <a href="configure.html">Configuration</a>
+          <p>Branding, languages, ChangeNOW key, AI chat, legal URLs, and the featured / blacklist currency lists.</p>
+        </div>
+        <div class="toc-card">
+          <a href="customize.html">Customization</a>
+          <p>File layout, adding a new language, recolouring the theme, swapping the logo, and customising email templates.</p>
+        </div>
+        <div class="toc-card">
+          <a href="api.html">API reference</a>
+          <p>The public REST proxy under <code>/api/exchange/*</code> plus the support, chat, limit-order, and recurring endpoints.</p>
+        </div>
+        <div class="toc-card">
+          <a href="troubleshooting.html">Troubleshooting</a>
+          <p>Stuck transactions, missing API keys, queue worker hiccups, mail delivery, migrations, and HTTPS mixed content.</p>
+        </div>
+        <div class="toc-card">
+          <a href="faq.html">FAQ</a>
+          <p>Quick answers about fees, accounts, KYC, shared hosting, refunds, and how updates are delivered.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="requirements">
+      <h2>System requirements at a glance</h2>
+      <ul>
+        <li>PHP <strong>8.2+</strong> with extensions: <code>mbstring</code>, <code>openssl</code>, <code>pdo</code>, <code>curl</code>, <code>fileinfo</code>, and either <code>gd</code> or <code>imagick</code>.</li>
+        <li>SQLite 3.35+, MySQL 8.0+ / MariaDB 10.6+, or PostgreSQL 14+.</li>
+        <li><strong>Redis</strong> for queues and cache (recommended; the database driver works as a fallback).</li>
+        <li>A long-running queue worker via <strong>Laravel Horizon</strong> for status polling.</li>
+        <li>Outbound HTTPS access to <code>api.changenow.io</code>.</li>
+        <li>A free ChangeNOW partner API key &mdash; see <a href="configure.html#api-key">Configuration</a>.</li>
+      </ul>
+      <p>The full matrix with minimums and recommended versions lives on the <a href="install.html#requirements">Installation page</a>.</p>
+    </section>
+
+    <section id="architecture">
+      <h2>Architecture in a sentence</h2>
+      <p>Visitors place swap requests through the React storefront; Laravel proxies upstream API calls, persists every transaction, and Horizon-backed queues poll status until each swap reaches a terminal state. Operators manage everything from the bundled admin panel shown below.</p>
+      <div class="doc-grid-2">
+        <figure class="doc-figure">
+          <img src="img/admin-dashboard.png" alt="CrossSwap admin dashboard with live volume, transactions, and status counts.">
+          <figcaption>Admin dashboard &mdash; live counts, recent transactions, and Horizon health.</figcaption>
+        </figure>
+        <figure class="doc-figure">
+          <img src="img/admin-transactions.png" alt="CrossSwap admin transactions list with filters, status badges, and provider IDs.">
+          <figcaption>Transactions screen &mdash; searchable, filterable, and CSV-exportable.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="storefront">
+      <h2>Storefront highlights</h2>
+      <p>Hero, features, and a curated &ldquo;Popular pairs&rdquo; band ship out of the box &mdash; all editable per-locale from the new Content CMS.</p>
+      <div class="doc-grid-2">
+        <figure class="doc-figure">
+          <img src="img/home-features.png" alt="CrossSwap homepage features section with icons describing why customers swap here.">
+          <figcaption>Features band &mdash; copy and stats are CMS-driven per locale.</figcaption>
+        </figure>
+        <figure class="doc-figure">
+          <img src="img/home-pairs.png" alt="CrossSwap homepage popular pairs section with one-click pair selectors.">
+          <figcaption>Popular pairs &mdash; tap to seed the swap card.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="help">
+      <h2>Need a hand?</h2>
+      <p>The bundled <a href="../help">Help Center</a> mirrors the FAQ for end-customers and is fully translatable.</p>
+      <div class="doc-grid-2">
+        <figure class="doc-figure">
+          <img src="img/help-center.png" alt="CrossSwap Help Center listing common topics with a ticket lookup form.">
+          <figcaption>Help Center landing &mdash; topic tiles, search, and ticket lookup.</figcaption>
+        </figure>
+        <figure class="doc-figure">
+          <img src="img/help-article.png" alt="CrossSwap help article page showing a single question and answer with related links.">
+          <figcaption>Individual article view &mdash; deep-linkable, with related answers in the sidebar.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <hr>
+
+    <footer class="kv" style="grid-template-columns: 120px 1fr;">
+      <dt>Version</dt><dd><strong>1.1.0</strong> &mdash; released 2026.</dd>
+      <dt>Licence</dt><dd>Envato Regular / Extended &mdash; see the bundled <a href="../../LICENSE.md">LICENSE.md</a>.</dd>
+      <dt>Copyright</dt><dd>&copy; 2026 CrossSwap. All rights reserved.</dd>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

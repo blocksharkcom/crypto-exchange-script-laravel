@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>Installation &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html" class="active">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">Installation</h1>
+      <p class="lede">CrossSwap installs through a guided browser-based wizard. On a server that already meets the requirements, the whole process takes about ten minutes &mdash; no command-line work required.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      On this page:
+      <a href="#requirements">Requirements</a> &middot;
+      <a href="#hosting">Hosting</a> &middot;
+      <a href="#installer">Installer walkthrough</a> &middot;
+      <a href="#manual">Manual install</a> &middot;
+      <a href="#hosting-checklist">Hosting checklist</a> &middot;
+      <a href="#post">Post-install</a> &middot;
+      <a href="#https">HTTPS</a> &middot;
+      <a href="#checklist">Verification</a>
+    </div>
+
+    <div class="doc-callout doc-callout-info">
+      <strong>Good news.</strong> The release archive ships a precompiled <code>public/build/</code> bundle and a complete <code>vendor/</code> folder. You can run CrossSwap with <strong>no Node.js and no Composer</strong> &mdash; the entire install boils down to uploading files and pointing the browser at <code>/install</code>.
+    </div>
+
+    <section id="requirements">
+      <h2>1. System requirements</h2>
+      <p>Before uploading anything, confirm your server meets the following matrix. The installer's first screen runs a live check &mdash; you can skip ahead to it if you want to verify your environment before reading the rest.</p>
+      <table>
+        <thead><tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PHP</strong></td><td>8.2</td><td>8.3 / 8.4</td></tr>
+          <tr><td><strong>PHP extensions</strong></td><td><code>bcmath</code>, <code>ctype</code>, <code>curl</code>, <code>dom</code>, <code>fileinfo</code>, <code>json</code>, <code>mbstring</code>, <code>openssl</code>, <code>pcre</code>, <code>pdo</code> (+ one of <code>pdo_sqlite</code>, <code>pdo_mysql</code>, <code>pdo_pgsql</code>), <code>tokenizer</code>, <code>xml</code>, <code>zip</code>, <code>intl</code>, <code>sodium</code>, and either <code>gd</code> or <code>imagick</code></td><td>+ <code>redis</code></td></tr>
+          <tr><td><strong>Composer</strong> (only if not using shipped <code>vendor/</code>)</td><td>2.x</td><td>2.7+</td></tr>
+          <tr><td><strong>Node.js</strong> (only if rebuilding assets &mdash; buyers can skip)</td><td>20</td><td>22</td></tr>
+          <tr><td><strong>Database</strong></td><td>SQLite (default, zero setup) / MySQL 8+ / PostgreSQL 14+</td><td>MySQL 8.0.30+ or PostgreSQL 16</td></tr>
+          <tr><td><strong>Web server</strong></td><td>Apache 2.4 / Nginx 1.20 / Caddy 2</td><td>Nginx 1.24 + PHP-FPM</td></tr>
+          <tr><td><strong>RAM</strong></td><td>256&nbsp;MB</td><td>512&nbsp;MB+</td></tr>
+          <tr><td><strong>Redis</strong> (optional &mdash; queue/cache acceleration)</td><td>&mdash;</td><td>7.0+</td></tr>
+        </tbody>
+      </table>
+      <p>The installer's requirements step (Step&nbsp;2 in the walkthrough) verifies each extension and shows a clear hint when something is missing.</p>
+      <figure class="doc-figure">
+        <img src="img/installer-02-requirements.png" alt="CrossSwap installer requirements screen showing green checks for every PHP extension and writable path.">
+        <figcaption>The requirements step in the installer ticks each PHP extension, writable path, and database driver one by one.</figcaption>
+      </figure>
+    </section>
+
+    <section id="hosting">
+      <h2>2. Hosting compatibility</h2>
+      <p>CrossSwap runs on the same hardware as any other modern Laravel application. Specific shared-hosting notes:</p>
+      <ul>
+        <li><strong>cPanel</strong> &mdash; create a Node app or PHP app, set the document root to <code>public/</code>, and use the bundled cron UI for the scheduler.</li>
+        <li><strong>Plesk</strong> &mdash; use the &ldquo;Hosting Settings&rdquo; panel to point the document root at <code>public/</code>, then enable PHP 8.2+ from the PHP Settings page.</li>
+        <li><strong>CyberPanel</strong> &mdash; create a website, set the open_basedir to include the parent of <code>public/</code>, and add the queue worker as a systemd service from the SSH terminal.</li>
+        <li><strong>VPS</strong> &mdash; the recommended setup. See the manual-install section below.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Shared hosting caveat.</strong> If your provider does not let you run a long-lived process or a 1-minute cron, status polling cannot work and swaps will stall at &ldquo;Waiting&rdquo;. Pick a host that offers either supervised processes or a cron job that runs every minute.
+      </div>
+    </section>
+
+    <section id="installer">
+      <h2>3. Step-by-step browser installer</h2>
+      <p>Upload the archive contents to your web root (the document root must point at the <code>public/</code> directory), set permissions on <code>storage/</code> and <code>bootstrap/cache/</code> to <code>775</code>, then open the site in a browser. CrossSwap will automatically redirect to <code>/install</code>.</p>
+      <pre><code>chmod -R 775 storage bootstrap/cache</code></pre>
+
+      <h3 id="step-1"><span class="doc-step-meta">Step 01</span>Welcome</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-01-welcome.png" alt="CrossSwap installer welcome screen with the brand mark and a single primary call to action.">
+        <figcaption>Step 1 &mdash; the welcome screen confirms you've reached the installer.</figcaption>
+      </figure>
+      <p>The welcome screen introduces the wizard and confirms the installer is reachable. Click <strong>Begin install</strong> to move on. No data is written.</p>
+
+      <h3 id="step-2"><span class="doc-step-meta">Step 02</span>Requirements check</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-02-requirements.png" alt="CrossSwap installer requirements check screen with green ticks per PHP extension and writable path.">
+        <figcaption>Step 2 &mdash; live environment check. The wizard refuses to advance until every required item is green.</figcaption>
+      </figure>
+      <p>This page runs <code>phpinfo()</code> internally, queries the file-system writability of <code>storage/</code> and <code>bootstrap/cache/</code>, and reports each one in real time. If a row is red, fix it on the server (install the extension, re-permission the directory) and click <strong>Re-check</strong>.</p>
+
+      <h3 id="step-3"><span class="doc-step-meta">Step 03</span>Database</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-03-database.png" alt="CrossSwap installer database step showing driver, host, port, name, username, and password fields.">
+        <figcaption>Step 3 &mdash; pick a database driver and enter credentials. SQLite is the default for the fastest setup.</figcaption>
+      </figure>
+      <p>Fields on this screen:</p>
+      <div class="kv">
+        <dt><strong>Driver</strong></dt><dd>SQLite, MySQL, or PostgreSQL. SQLite is the simplest &mdash; nothing else to install.</dd>
+        <dt><strong>Host</strong></dt><dd>Usually <code>127.0.0.1</code>. Ignored for SQLite.</dd>
+        <dt><strong>Port</strong></dt><dd>3306 for MySQL, 5432 for PostgreSQL.</dd>
+        <dt><strong>Database</strong></dt><dd>For SQLite, the path to the file (<code>database/database.sqlite</code> by default). For MySQL/PostgreSQL, the database name &mdash; create it first.</dd>
+        <dt><strong>Username / Password</strong></dt><dd>The DB user CrossSwap will connect as. Must have <code>CREATE / ALTER / DROP</code> privileges so migrations can run.</dd>
+      </div>
+      <p>When you click <strong>Test &amp; migrate</strong>, the installer opens a live connection, writes the credentials to <code>.env</code>, and runs <code>php artisan migrate --force</code> for you.</p>
+
+      <h3 id="step-4"><span class="doc-step-meta">Step 04</span>Admin account</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-04-admin.png" alt="CrossSwap installer admin step with name, email, and password fields.">
+        <figcaption>Step 4 &mdash; create the first administrator. The password must be at least 12 characters.</figcaption>
+      </figure>
+      <div class="kv">
+        <dt><strong>Name</strong></dt><dd>Display name. Appears in the audit log.</dd>
+        <dt><strong>Email</strong></dt><dd>Used for sign-in and as the recipient for stuck-swap alerts.</dd>
+        <dt><strong>Password / Confirm password</strong></dt><dd>Minimum 12 characters. Stored as an Argon2id hash.</dd>
+      </div>
+      <p>This admin is automatically assigned the <code>superadmin</code> role.</p>
+
+      <h3 id="step-5"><span class="doc-step-meta">Step 05</span>Branding</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-05-branding.png" alt="CrossSwap installer branding step with brand, tagline, support email, and theme fields.">
+        <figcaption>Step 5 &mdash; set the public-facing identity. Everything here can be changed later from the admin panel.</figcaption>
+      </figure>
+      <div class="kv">
+        <dt><strong>Brand</strong></dt><dd>Public-facing product name &mdash; appears in the header, footer, and emails.</dd>
+        <dt><strong>Tagline</strong></dt><dd>Optional. Shown under the hero on the homepage.</dd>
+        <dt><strong>Support email</strong></dt><dd>Used as the reply-to on outbound mail and shown on the contact page.</dd>
+        <dt><strong>Theme</strong></dt><dd><code>dark</code> (default), <code>light</code>, or <code>auto</code> (follows the visitor's OS preference).</dd>
+      </div>
+
+      <h3 id="step-6"><span class="doc-step-meta">Step 06</span>ChangeNOW API key</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-06-api.png" alt="CrossSwap installer API step with the ChangeNOW key, referral code, default flow radio, and a Test button.">
+        <figcaption>Step 6 &mdash; paste your ChangeNOW partner key. The Test button probes the live API before saving.</figcaption>
+      </figure>
+      <div class="kv">
+        <dt><strong>API key</strong></dt><dd>From the <a href="https://changenow.io/affiliate" target="_blank" rel="noopener noreferrer">ChangeNOW partner dashboard</a>. Free to obtain.</dd>
+        <dt><strong>Referral / partner address</strong></dt><dd>Optional. Routes the commission to your preferred wallet.</dd>
+        <dt><strong>Default flow</strong></dt><dd><code>standard</code> (floating market rate) or <code>fixed-rate</code> (rate locked at the moment of swap).</dd>
+      </div>
+      <p>The installer calls <code>/install/api</code> with <code>test_only=true</code> when you press <strong>Test connection</strong>; it briefly stores the key, fetches the currency list to confirm validity, then either keeps it or rolls back.</p>
+
+      <h3 id="step-7"><span class="doc-step-meta">Step 07</span>Done</h3>
+      <figure class="doc-figure">
+        <img src="img/installer-07-done.png" alt="CrossSwap installer success screen with a green check, congratulations text, and a Finalize button.">
+        <figcaption>Step 7 &mdash; the success screen. Clicking Finalize writes the lock file and bounces you to the admin panel.</figcaption>
+      </figure>
+      <p>Pressing <strong>Finalize</strong> triggers <code>/install/finalize</code>, which writes <code>storage/app/installed.lock</code> so the installer cannot run again, logs you into the admin panel automatically, and lands you on the dashboard.</p>
+
+      <div class="doc-grid-2">
+        <figure class="doc-figure">
+          <img src="img/admin-login.png" alt="CrossSwap admin login screen.">
+          <figcaption>Future visits to <code>/admin/login</code> show this screen.</figcaption>
+        </figure>
+        <figure class="doc-figure">
+          <img src="img/admin-dashboard.png" alt="CrossSwap admin dashboard with KPIs and recent transactions.">
+          <figcaption>After sign-in you land on the dashboard with zero transactions on a fresh install.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="manual">
+      <h2>4. Manual install (CLI)</h2>
+      <p>For buyers who prefer the command line, the same flow boils down to:</p>
+      <pre><code>git clone &lt;your-repo&gt; crossswap
+cd crossswap
+composer install --no-dev --optimize-autoloader
+cp .env.example .env
+php artisan key:generate
+# Edit .env to set DB credentials, then:
+php artisan migrate --force
+php artisan db:seed --class=AdminRolesSeeder --force
+php artisan storage:link
+chmod -R 775 storage bootstrap/cache</code></pre>
+      <p>Create the first admin and write the lock file directly:</p>
+      <pre><code>php artisan tinker --execute="\
+  \\App\\Models\\Admin::create([\
+    'name' =&gt; 'Admin',\
+    'email' =&gt; 'you@example.com',\
+    'password' =&gt; bcrypt('change-me-12chars'),\
+  ])-&gt;assignRole('superadmin');"
+touch storage/app/installed.lock</code></pre>
+      <p>Finally, drop your ChangeNOW key into the settings table by logging into <code>/admin</code> and using the <strong>Settings &rarr; API management</strong> page.</p>
+    </section>
+
+    <section id="hosting-checklist">
+      <h2>5. Hosting checklist</h2>
+      <p>Run through these once before you start sending real traffic. Most stuck-swap reports trace back to a missing item in this list.</p>
+      <h3 id="hosting-perms">File permissions</h3>
+      <p>The web user (typically <code>www-data</code>, <code>nginx</code>, or <code>apache</code>) must own and be able to write the two state directories:</p>
+      <pre><code>sudo chown -R www-data:www-data storage bootstrap/cache
+sudo find storage bootstrap/cache -type d -exec chmod 775 {} \;
+sudo find storage bootstrap/cache -type f -exec chmod 664 {} \;</code></pre>
+      <p>If your hosting panel runs PHP-FPM under a different user, swap <code>www-data</code> for that user.</p>
+
+      <h3 id="hosting-queue">Queue worker</h3>
+      <p>CrossSwap polls the upstream exchange for swap status. You need a long-lived worker:</p>
+      <pre><code># simplest:
+php artisan queue:work --tries=3 --timeout=120
+
+# recommended in production (Horizon dashboard at /horizon):
+php artisan horizon</code></pre>
+      <p>Supervise it with <code>systemd</code> or <code>supervisord</code> so it restarts on failure and after deploys. A complete <code>systemd</code> unit is in <a href="#post">section 6</a> below.</p>
+
+      <h3 id="hosting-cron">Scheduler cron</h3>
+      <p>The scheduler dispatches the polling, stuck-flagging, limit-order, and recurring jobs. Add this single line to the web user's crontab (<code>crontab -e</code> as that user):</p>
+      <pre><code>* * * * * cd /var/www/crossswap &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+      <div class="doc-callout doc-callout-warn">
+        <strong>Critical.</strong> Without this cron, status polling, stuck-swap alerts, recurring DCA runs, and limit orders all stop. Most shared hosts offer a cron UI in cPanel / Plesk &mdash; use it if you cannot reach <code>crontab</code> directly.
+      </div>
+
+      <h3 id="hosting-https">HTTPS &amp; APP_URL</h3>
+      <p>Set <code>APP_URL=https://yourdomain.tld</code> in <code>.env</code> and serve the site over HTTPS. CrossSwap forces secure cookies and HSTS when <code>APP_ENV=production</code>.</p>
+    </section>
+
+    <section id="post">
+      <h2>6. Post-install: queue, scheduler, mail</h2>
+
+      <h3 id="queue">Queue worker</h3>
+      <p>CrossSwap polls the upstream exchange every minute. A long-lived worker must be running:</p>
+      <pre><code>php artisan horizon</code></pre>
+      <p>For production, supervise it with <code>systemd</code> or <code>supervisord</code> so it restarts on failure and after deploys. Example <code>systemd</code> unit (<code>/etc/systemd/system/crossswap-horizon.service</code>):</p>
+      <pre><code>[Unit]
+Description=CrossSwap Horizon worker
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/crossswap
+ExecStart=/usr/bin/php artisan horizon
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+      <h3 id="cron">Scheduler cron</h3>
+      <p>The scheduler dispatches the polling, stuck-flagging, limit-order, and recurring jobs. Add this one line to the web user's crontab:</p>
+      <pre><code>* * * * * cd /var/www/crossswap &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+
+      <h3 id="mail">Mail</h3>
+      <p>Add SMTP credentials to <code>.env</code>:</p>
+      <pre><code>MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=your-username
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=hello@yourdomain.tld
+MAIL_FROM_NAME="${APP_NAME}"</code></pre>
+      <p>Then clear the cache so the new values take effect:</p>
+      <pre><code>php artisan config:clear</code></pre>
+    </section>
+
+    <section id="https">
+      <h2>7. HTTPS</h2>
+      <p>Production traffic must be served over HTTPS &mdash; CrossSwap enforces secure cookies and HSTS when <code>APP_ENV=production</code>.</p>
+
+      <h3 id="https-cloudflare">Option A &mdash; Cloudflare Flexible / Full</h3>
+      <p>If your origin is HTTP-only, point the domain at Cloudflare, enable the SSL setting (Flexible or, ideally, Full Strict), then add this in <code>App\Providers\AppServiceProvider::boot()</code> if it isn't already enabled by env:</p>
+      <pre><code>if ($this-&gt;app-&gt;environment('production')) {
+    URL::forceScheme('https');
+}</code></pre>
+
+      <h3 id="https-letsencrypt">Option B &mdash; Let's Encrypt (Nginx)</h3>
+      <pre><code>sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.tld -d www.yourdomain.tld
+sudo systemctl reload nginx</code></pre>
+      <p>Certbot installs a daily cron that auto-renews the certificate 30 days before expiry.</p>
+
+      <h3 id="https-caddy">Option C &mdash; Caddy (zero config)</h3>
+      <p>Caddy 2 obtains and renews certificates automatically. A complete Caddyfile:</p>
+      <pre><code>yourdomain.tld {
+    root * /var/www/crossswap/public
+    php_fastcgi unix//run/php/php8.3-fpm.sock
+    file_server
+    encode gzip zstd
+}</code></pre>
+    </section>
+
+    <section id="checklist">
+      <h2>8. Post-install verification checklist</h2>
+      <p>Tick these off after the installer completes to confirm the deployment is healthy:</p>
+      <ul>
+        <li>Visiting <code>/</code> shows the storefront with the swap card.</li>
+        <li>Visiting <code>/install</code> redirects back to the home page (lock file is in place).</li>
+        <li>Signing in at <code>/admin/login</code> lands on the dashboard.</li>
+        <li>The dashboard shows <strong>0 transactions</strong> on a fresh install rather than an error.</li>
+        <li>The currency selector on the homepage lists 50+ currencies (proves the ChangeNOW key works).</li>
+        <li>A test swap reaches the <strong>Waiting</strong> state (and starts polling).</li>
+        <li>The <code>queue:work</code> or Horizon process is running &mdash; <code>php artisan horizon:status</code> reports <strong>running</strong>.</li>
+        <li>The scheduler cron has logged a run in the last minute &mdash; <code>php artisan schedule:list</code>.</li>
+        <li>An outbound test email arrives in the inbox of the support address.</li>
+        <li>Browsing the site over HTTPS shows a valid certificate and no mixed-content warnings in DevTools.</li>
+      </ul>
+      <div class="callout"><strong>Next step.</strong> Head over to <a href="configure.html">Configuration</a> to fine-tune branding, languages, the chat assistant, and the featured currency lists.</div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

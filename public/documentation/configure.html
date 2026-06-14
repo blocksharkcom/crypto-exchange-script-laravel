@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>Configuration &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html" class="active">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">Configuration</h1>
+      <p class="lede">Everything visitors see &mdash; brand, languages, currency lists, the AI chat assistant, and your ChangeNOW key &mdash; is editable from the admin panel. No server access required.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      On this page:
+      <a href="#features">Features management</a> &middot;
+      <a href="#branding">Branding</a> &middot;
+      <a href="#languages">Languages</a> &middot;
+      <a href="#translations">Translations</a> &middot;
+      <a href="#api-key">ChangeNOW key</a> &middot;
+      <a href="#chat">AI chat</a> &middot;
+      <a href="#legal">Legal URLs</a> &middot;
+      <a href="#currencies">Currencies</a> &middot;
+      <a href="#queue">Queue &amp; cron</a>
+    </div>
+
+    <section id="features">
+      <h2>Features management</h2>
+      <p>Every operational feature lives under one of the admin nav entries. This section maps each one to its URL and shows you the screen.</p>
+
+      <h3 id="features-dashboard">Dashboard</h3>
+      <p>Open <code>/admin</code>. KPIs across the top (lifetime swaps, volume, fees, open tickets), a 14-day chart, recent transactions, and stuck-swap indicators &mdash; everything you need at a glance.</p>
+      <figure class="doc-figure">
+        <img src="img/admin-dashboard.png" alt="Admin dashboard with KPIs, a 14-day chart, and recent transactions.">
+        <figcaption>The dashboard at <code>/admin</code>. KPIs auto-refresh on a 60-second timer.</figcaption>
+      </figure>
+
+      <h3 id="features-transactions">Transactions</h3>
+      <p>Open <code>/admin/transactions</code>. Filter by status, currency pair, or date; click a row to view the on-chain hashes, the original payload sent to ChangeNOW, and the polling history. The <strong>Export CSV</strong> button respects active filters.</p>
+      <figure class="doc-figure">
+        <img src="img/admin-transactions.png" alt="Admin transactions list with status filters, currency badges, and a row detail drawer.">
+        <figcaption>The Transactions screen. Rows expand inline; the detail drawer shows the full upstream payload.</figcaption>
+      </figure>
+
+      <h3 id="features-content">Content CMS</h3>
+      <p>Open <code>/admin/content</code>. New in 1.1.0 &mdash; edit the four homepage marketing blocks per locale without touching code:</p>
+      <ul>
+        <li><strong>Highlights</strong> &mdash; icon + title + body cards under the hero.</li>
+        <li><strong>Reviews</strong> &mdash; testimonial carousel (name, role, quote, optional avatar).</li>
+        <li><strong>Stats</strong> &mdash; the animated counter band (volume, swaps, chains, etc.).</li>
+        <li><strong>How it works</strong> &mdash; the 3-step explainer band.</li>
+      </ul>
+      <p>Each section has locale tabs at the top. <code>Content::defaults()</code> seeds a clean install so the homepage renders before you customise anything.</p>
+      <figure class="doc-figure">
+        <img src="img/admin-content.png" alt="Admin Content CMS screen with Highlights, Reviews, Stats and How it works sections and locale tabs.">
+        <figcaption>Content CMS &mdash; one screen per section, locale tabs at the top, instant save.</figcaption>
+      </figure>
+
+      <h3 id="features-pages">Pages CMS (multi-locale, Markdown)</h3>
+      <p>Open <code>/admin/pages</code>. Each page lives at <code>/p/{slug}</code> on the public site. Per-locale title, excerpt, and body are backed by the <code>page_translations</code> table; filled-dot indicators in the locale-tab strip show which languages are complete.</p>
+      <p>The editor is a tabbed Write / Preview Markdown editor with a toolbar (headings, bold, italic, code, lists, links, blockquote). No external editor dependency &mdash; the preview reuses the storefront's own renderer so what you see is exactly what visitors get.</p>
+      <div class="doc-grid-2">
+        <figure class="doc-figure">
+          <img src="img/admin-pages.png" alt="Admin Pages CMS index with a list of CMS pages, status badges, and locale completeness dots.">
+          <figcaption>Pages CMS index &mdash; status badges and the locale-completeness pill strip.</figcaption>
+        </figure>
+        <figure class="doc-figure">
+          <img src="img/admin-page-editor.png" alt="Admin Pages CMS edit screen showing the tabbed Markdown editor with toolbar and locale tabs.">
+          <figcaption>The Markdown editor with Write / Preview tabs and the formatting toolbar.</figcaption>
+        </figure>
+      </div>
+
+      <h3 id="features-other">Tickets, Users, Campaigns</h3>
+      <ul>
+        <li><strong>Tickets</strong> &mdash; <code>/admin/tickets</code>. Customer support queue. Reply inline; replies go out by email and are mirrored to the customer's ticket portal.</li>
+        <li><strong>Users</strong> &mdash; <code>/admin/users</code>. Customer accounts (lifetime swaps, volume, last seen, suspend/restore).</li>
+        <li><strong>Campaigns</strong> &mdash; <code>/admin/campaigns</code>. Newsletter / promo campaigns to the customer list with per-locale templates.</li>
+        <li><strong>Audit log</strong> &mdash; <code>/admin/audit</code>. Owen-It powered &mdash; every admin action is logged with before/after values.</li>
+        <li><strong>API logs</strong> &mdash; <code>/admin/api-logs</code>. Raw ChangeNOW request/response history, useful when debugging stuck swaps.</li>
+      </ul>
+
+      <h3 id="features-settings">Settings tabs</h3>
+      <p>Open <code>/admin/settings</code>. The page is split into tabs &mdash; each tab maps to a controller method and a dedicated form:</p>
+      <ul>
+        <li><strong>Brand</strong> &mdash; name, tagline, logo (light / dark), favicon, social URLs, legal URLs.</li>
+        <li><strong>Theme</strong> &mdash; primary colour override, default theme (dark / light / auto), typography tweaks.</li>
+        <li><strong>SMTP</strong> &mdash; mail host / port / credentials / from address with a <strong>Send test email</strong> button.</li>
+        <li><strong>API</strong> &mdash; ChangeNOW key + referral address with a <strong>Test connection</strong> probe.</li>
+        <li><strong>AI</strong> &mdash; chat provider (OpenAI / Anthropic / disabled), key, model, assistant name, system prompt.</li>
+        <li><strong>Security</strong> &mdash; 2FA toggle, session lifetime, IP allow-list for the admin panel.</li>
+      </ul>
+    </section>
+
+    <section id="branding">
+      <h2>Branding</h2>
+      <p>Open <strong>Admin &rarr; Settings &rarr; Branding</strong>. You can change everything below without rebuilding assets.</p>
+      <div class="kv">
+        <dt><strong>Brand name</strong></dt><dd>Header, footer, emails, and the <code>&lt;title&gt;</code> tag.</dd>
+        <dt><strong>Logo</strong></dt><dd>SVG or PNG. Saved to <code>storage/app/public/brand/</code>.</dd>
+        <dt><strong>Logo (dark)</strong></dt><dd>Optional alternate for light backgrounds. The storefront swaps automatically.</dd>
+        <dt><strong>Tagline</strong></dt><dd>Optional. Shown under the hero on the homepage.</dd>
+        <dt><strong>Theme</strong></dt><dd><code>dark</code> (default), <code>light</code>, or <code>auto</code>.</dd>
+        <dt><strong>Brand colour</strong></dt><dd>Hex value &mdash; the lime <code>#bff15a</code> by default. Applied via CSS variables, so no rebuild needed.</dd>
+      </div>
+      <p>Settings are cached for ten minutes &mdash; clear the cache after a change if you want to skip the wait:</p>
+      <pre><code>php artisan cache:clear</code></pre>
+      <figure class="doc-figure">
+        <img src="img/admin-dashboard.png" alt="Admin dashboard showing branding panel and live metrics.">
+        <figcaption>The admin panel groups all branding controls on one page.</figcaption>
+      </figure>
+    </section>
+
+    <section id="languages">
+      <h2>Languages</h2>
+      <p>CrossSwap ships with English, Spanish, German, and French translations. Toggle which ones are user-selectable from <strong>Settings &rarr; Languages</strong>.</p>
+      <p>To add a new language, see the <a href="#translations">Translations</a> section below.</p>
+      <p>Visitor language is detected from:</p>
+      <ol>
+        <li>The <code>crossswap_lang</code> cookie if set (user explicitly picked one).</li>
+        <li>The <code>Accept-Language</code> header otherwise.</li>
+        <li>The first enabled language as a final fallback.</li>
+      </ol>
+    </section>
+
+    <section id="translations">
+      <h2>Translations</h2>
+      <p>All storefront strings live in flat PHP arrays under <code>lang/&lt;locale&gt;/</code>. Shipped locales:</p>
+      <div class="kv">
+        <dt><code>lang/en/site.php</code></dt><dd>English storefront strings (the canonical source).</dd>
+        <dt><code>lang/es/site.php</code></dt><dd>Spanish.</dd>
+        <dt><code>lang/de/site.php</code></dt><dd>German.</dd>
+        <dt><code>lang/fr/site.php</code></dt><dd>French.</dd>
+        <dt><code>lang/&lt;locale&gt;/emails.php</code></dt><dd>Strings used inside transactional email templates.</dd>
+        <dt><code>lang/&lt;locale&gt;/help_articles.php</code></dt><dd>Help-center article content.</dd>
+      </div>
+
+      <h3 id="translations-add">Add a new locale</h3>
+      <ol>
+        <li>Copy the English file as the starting point:
+          <pre><code>cp lang/en/site.php lang/it/site.php
+cp lang/en/emails.php lang/it/emails.php
+cp lang/en/help_articles.php lang/it/help_articles.php</code></pre>
+        </li>
+        <li>Translate the values in each file. Every key must exist; missing keys fall back to the default locale.</li>
+        <li>Append the new locale code to the <code>languages</code> array in <code>config/swapforge.php</code>:
+          <pre><code>'languages' =&gt; ['en', 'es', 'de', 'fr', 'it'],</code></pre>
+        </li>
+        <li>Rebuild the cache so the new locale is picked up:
+          <pre><code>php artisan optimize:clear</code></pre>
+        </li>
+        <li>Open <strong>Admin &rarr; Settings &rarr; Languages</strong> and toggle the new locale on so the language picker exposes it on the storefront.</li>
+      </ol>
+
+      <h3 id="translations-parity">Translation parity verification</h3>
+      <p>This one-liner counts the flat keys per locale &mdash; the four numbers should match. Any divergence points to missing translations:</p>
+      <pre><code>php -r '$flat=function($a,$p="") use (&amp;$flat){$o=[];foreach($a as $k=&gt;$v){$n=$p===""?$k:"$p.$k";is_array($v)?$o=array_merge($o,$flat($v,$n)):$o[]=$n;}return $o;};
+foreach(["en","es","de","fr"] as $l){printf("%s: %d keys\n", $l, count($flat(require "lang/$l/site.php")));}'</code></pre>
+      <p>Sample output on a clean install:</p>
+      <pre><code>en: 412 keys
+es: 412 keys
+de: 412 keys
+fr: 412 keys</code></pre>
+      <div class="doc-callout doc-callout-info">
+        <strong>Tip.</strong> Drop the snippet into a <code>tests/Feature/TranslationParityTest.php</code> assertion if you want CI to catch missing keys when you add a new locale.
+      </div>
+    </section>
+
+    <section id="api-key">
+      <h2>ChangeNOW API key</h2>
+      <p>CrossSwap integrates with <strong>ChangeNOW</strong>, a non-custodial cross-chain swap provider. A free partner account gets you an API key plus a commission on every swap.</p>
+      <ol>
+        <li>Sign up at <a href="https://changenow.io/affiliate" target="_blank" rel="noopener noreferrer">changenow.io/affiliate</a>.</li>
+        <li>From the partner dashboard, copy your <strong>API key</strong>.</li>
+        <li>In CrossSwap admin, open <strong>Settings &rarr; API management</strong> and paste it into the <strong>ChangeNOW API key</strong> field.</li>
+        <li>(Optional) Paste your <strong>Referral / partner address</strong> &mdash; this routes commission to your preferred wallet.</li>
+        <li>Click <strong>Save</strong>. The form probes the live API before persisting.</li>
+      </ol>
+
+      <h3 id="api-key-free">Is it really free?</h3>
+      <p>Yes. Partner accounts cost nothing. ChangeNOW earns from the spread baked into each swap rate and shares a percentage with you on every transaction your storefront produces. There is no monthly fee, minimum volume, or KYC requirement to obtain a key.</p>
+
+      <h3 id="api-key-commission">How do commissions work?</h3>
+      <p>Every swap created through your CrossSwap installation is automatically attributed to your partner account. The commission percentage is set by ChangeNOW (typically 0.4% &ndash; 0.5% of swap value). Payouts arrive on the schedule set in your partner dashboard &mdash; usually weekly or on demand.</p>
+      <figure class="doc-figure">
+        <img src="img/admin-dashboard.png" alt="Admin dashboard with the API management panel visible.">
+        <figcaption>Once the key is wired, the dashboard begins showing real transactions and lifetime volume.</figcaption>
+      </figure>
+    </section>
+
+    <section id="chat">
+      <h2>AI chat assistant</h2>
+      <p>CrossSwap bundles an optional AI support assistant that answers visitor questions in real time. Open <strong>Settings &rarr; Chat</strong>.</p>
+      <div class="kv">
+        <dt><strong>Enabled</strong></dt><dd>Toggles the floating chat bubble on the public site.</dd>
+        <dt><strong>Provider</strong></dt><dd><code>none</code>, <code>openai</code>, or <code>anthropic</code>.</dd>
+        <dt><strong>API key</strong></dt><dd>The bearer token for the chosen provider.</dd>
+        <dt><strong>Model</strong></dt><dd>e.g. <code>gpt-4o-mini</code> (OpenAI) or <code>claude-haiku-4-5</code> (Anthropic).</dd>
+        <dt><strong>Assistant name</strong></dt><dd>Display name shown above the chat panel (e.g. &ldquo;Lyra&rdquo;).</dd>
+        <dt><strong>System prompt</strong></dt><dd>Up to 4 000 characters. Pre-seeded with a sensible default.</dd>
+      </div>
+
+      <h3 id="chat-openai">OpenAI</h3>
+      <ol>
+        <li>Create an account at <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer">platform.openai.com</a>.</li>
+        <li>Visit <strong>API keys</strong> and click <strong>Create new secret key</strong>.</li>
+        <li>Paste the key into CrossSwap, pick a model (<code>gpt-4o-mini</code> is the cheapest competent option), and save.</li>
+      </ol>
+
+      <h3 id="chat-anthropic">Anthropic</h3>
+      <ol>
+        <li>Create an account at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a>.</li>
+        <li>Visit <strong>Settings &rarr; API Keys</strong> and create a key.</li>
+        <li>Paste it into CrossSwap, pick a model (<code>claude-haiku-4-5</code> for cost, <code>claude-sonnet-4-7</code> for quality), and save.</li>
+      </ol>
+
+      <h3 id="chat-test">Testing</h3>
+      <p>Use the <strong>Send test message</strong> button in the settings page. It calls the same code path the storefront uses and returns the assistant's reply inline. If the key is invalid or rate-limited, the panel shows the upstream error.</p>
+      <div class="callout warn">
+        <strong>Rate limits.</strong> The chat endpoint is rate-limited to 20 requests per minute per IP. Bumps live in <code>routes/api.php</code>.
+      </div>
+    </section>
+
+    <section id="legal">
+      <h2>Legal URLs</h2>
+      <p>The address-entry step links to your legal pages. Set them under <strong>Settings &rarr; Legal</strong>:</p>
+      <div class="kv">
+        <dt><code>terms_url</code></dt><dd>Terms of Use.</dd>
+        <dt><code>privacy_url</code></dt><dd>Privacy Policy.</dd>
+        <dt><code>aml_url</code></dt><dd>AML / KYC Policy.</dd>
+      </div>
+      <p>If you leave a field blank, the storefront hides the corresponding link instead of pointing at a broken URL.</p>
+    </section>
+
+    <section id="currencies">
+      <h2>Featured and blacklisted currencies</h2>
+      <p>Pin the most popular tickers to the top of the currency selector under <strong>Settings &rarr; Currencies</strong>. The defaults:</p>
+      <pre><code>['btc', 'eth', 'usdt', 'bnb', 'sol', 'usdc', 'xmr', 'ada', 'trx', 'doge']</code></pre>
+      <p>The <strong>Blacklist</strong> field hides any ticker you don't want available &mdash; useful if a coin is restricted in your jurisdiction or repeatedly causes stuck swaps.</p>
+      <figure class="doc-figure">
+        <img src="img/home-pairs.png" alt="Storefront popular pairs band showing pinned currency pairs.">
+        <figcaption>Featured currencies pinned to the top of the selector inside the swap card.</figcaption>
+      </figure>
+    </section>
+
+    <section id="queue">
+      <h2>Queue worker &amp; scheduler</h2>
+      <p>CrossSwap defines two Horizon supervisors:</p>
+      <ul>
+        <li><code>default</code> &mdash; handles emails and one-off jobs (4 workers in production).</li>
+        <li><code>exchange-polling</code> &mdash; polls in-flight swaps for status (6 workers in production).</li>
+      </ul>
+      <p>Start Horizon:</p>
+      <pre><code>php artisan horizon</code></pre>
+      <p>Visit <code>/horizon</code> while signed in as an administrator to watch the queues in real time. The cron entry that ties everything together:</p>
+      <pre><code>* * * * * cd /var/www/crossswap &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+    </section>
+
+    <section id="stuck">
+      <h2>Stuck-transaction thresholds</h2>
+      <p>By default, swaps that remain in <code>waiting</code> for over 180 minutes or in <code>confirming</code> for over 360 minutes are flagged as stuck and admins are notified by email. Adjust the thresholds in <code>config/swapforge.php</code>:</p>
+      <pre><code>'tx_stuck' =&gt; [
+    'waiting_minutes'    =&gt; 180,
+    'confirming_minutes' =&gt; 360,
+],</code></pre>
+    </section>
+
+    <section id="production">
+      <h2>Production checklist</h2>
+      <ul>
+        <li><code>APP_ENV=production</code> and <code>APP_DEBUG=false</code> in <code>.env</code>.</li>
+        <li>HTTPS forced (already wired when <code>APP_ENV=production</code>).</li>
+        <li>Horizon supervised by <code>systemd</code> or <code>supervisord</code>.</li>
+        <li>Cron entry verified with <code>crontab -l</code>.</li>
+        <li>Outbound HTTPS reachable to <code>api.changenow.io</code>.</li>
+        <li>SMTP credentials tested with <code>php artisan tinker</code> &rarr; <code>Mail::raw(...)</code>.</li>
+      </ul>
+      <div class="callout">
+        <strong>Next step.</strong> Tweak look-and-feel deeper on the <a href="customize.html">Customization page</a>, or read the <a href="api.html">API reference</a>.
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>Customization &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html" class="active">Customization</a></li>
+      <li><a href="api.html">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">Customization</h1>
+      <p class="lede">Brand colours, languages, logos, and email templates &mdash; this page covers the small handful of files you will edit when you want to go beyond the admin panel.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      On this page:
+      <a href="#branding-admin">Branding via admin</a> &middot;
+      <a href="#layout">File structure</a> &middot;
+      <a href="#new-language">New language</a> &middot;
+      <a href="#colours">Brand tokens</a> &middot;
+      <a href="#logo">Logo</a> &middot;
+      <a href="#favicon">Favicon &amp; OG</a> &middot;
+      <a href="#emails">Email templates</a> &middot;
+      <a href="#components">Components</a>
+    </div>
+
+    <section id="branding-admin">
+      <h2>Branding via the admin panel</h2>
+      <p>For 90% of buyers, the admin panel covers everything &mdash; no code edits or rebuilds required. Open <strong>Admin &rarr; Settings &rarr; Brand</strong> and you'll find:</p>
+      <div class="kv">
+        <dt><strong>Logo</strong></dt><dd>SVG or PNG, uploaded through <code>LogoUploader</code>. Saved to <code>storage/app/public/brand/</code> and served via the public symlink.</dd>
+        <dt><strong>Logo (dark)</strong></dt><dd>Optional alternate that the storefront uses on light backgrounds.</dd>
+        <dt><strong>Name</strong></dt><dd>Public-facing brand name. Header, footer, page titles, and emails all read this value.</dd>
+        <dt><strong>Tagline</strong></dt><dd>Optional. Appears under the hero on the homepage.</dd>
+        <dt><strong>Social links</strong></dt><dd>Twitter / X, Telegram, Discord, Reddit &mdash; left blank, the corresponding icon is hidden.</dd>
+        <dt><strong>Legal URLs</strong></dt><dd>Terms, Privacy, AML &mdash; these power the address-entry consent links and the footer.</dd>
+      </div>
+      <p>Changes take effect immediately &mdash; settings are cached for 10 minutes but the admin form busts the cache on save.</p>
+      <figure class="doc-figure">
+        <img src="img/admin-dashboard.png" alt="CrossSwap admin panel with the branding controls visible.">
+        <figcaption>The admin panel groups every branding control on one page &mdash; no SSH required.</figcaption>
+      </figure>
+      <div class="doc-callout doc-callout-info">
+        <strong>Tip.</strong> The <code>LogoUploader</code> component validates both file type and dimensions client-side. Keep the source SVG &mdash; you'll want it later for the favicon and OG card too.
+      </div>
+    </section>
+
+    <section id="layout">
+      <h2>File structure</h2>
+      <p>The bits of the codebase you're most likely to touch:</p>
+      <div class="kv">
+        <dt><code>app/</code></dt><dd>Laravel application code &mdash; controllers, models, services. Read-only for most users; out of scope for cosmetic edits.</dd>
+        <dt><code>resources/css/app.css</code></dt><dd>Tailwind 4 entry plus the <code>@theme</code> block with brand colours.</dd>
+        <dt><code>resources/js/Pages/</code></dt><dd>One Inertia page per route &mdash; <code>Home.tsx</code>, <code>Support.tsx</code>, etc.</dd>
+        <dt><code>resources/js/components/</code></dt><dd>Re-usable React components grouped by feature.</dd>
+        <dt><code>resources/views/emails/</code></dt><dd>Blade templates for outbound mail.</dd>
+        <dt><code>lang/&lt;locale&gt;/site.php</code></dt><dd>All storefront strings, including FAQ, hero, footer, errors.</dd>
+        <dt><code>lang/&lt;locale&gt;/emails.php</code></dt><dd>Strings used inside email templates.</dd>
+        <dt><code>config/swapforge.php</code></dt><dd>App-level config: language list, thresholds, social links.</dd>
+        <dt><code>public/favicon.svg</code> / <code>public/og-image.svg</code></dt><dd>Static brand assets served as-is.</dd>
+      </div>
+    </section>
+
+    <section id="new-language">
+      <h2>Adding a new language</h2>
+      <p>CrossSwap ships with English, Spanish, German, and French translations. Adding another locale takes three steps:</p>
+      <ol>
+        <li>Edit <code>config/swapforge.php</code> and append the locale code to the <code>languages</code> array, e.g. <code>'it'</code> for Italian.</li>
+        <li>Copy <code>lang/en/site.php</code> to <code>lang/&lt;code&gt;/site.php</code> and translate the values. Every key must exist &mdash; missing keys fall back to English.</li>
+        <li>Optionally translate <code>lang/&lt;code&gt;/emails.php</code> and <code>lang/&lt;code&gt;/help_articles.php</code>.</li>
+      </ol>
+      <p>The file is a flat PHP array. A truncated sample:</p>
+      <pre><code>&lt;?php
+return [
+    'hero' =&gt; [
+        'title_a'  =&gt; 'Scambia qualsiasi crypto',
+        'title_b'  =&gt; 'all\'istante',
+        'subtitle' =&gt; 'Scambia Bitcoin e oltre 900 token...',
+    ],
+    'nav' =&gt; [
+        'home'     =&gt; 'Home',
+        'help'     =&gt; 'Aiuto',
+        'faq'      =&gt; 'FAQ',
+        'docs'     =&gt; 'Documenti',
+        'language' =&gt; 'Lingua',
+        'track'    =&gt; 'Traccia ordine',
+    ],
+    // ... continue for every top-level key in lang/en/site.php
+];</code></pre>
+      <p>Clear caches after the change:</p>
+      <pre><code>php artisan cache:clear
+php artisan view:clear</code></pre>
+    </section>
+
+    <section id="colours">
+      <h2>Tailwind v4 brand tokens</h2>
+      <p>CrossSwap uses Tailwind CSS v4 with the new <code>@theme</code> block. Every brand colour, ink shade, font, and accent lives in <code>resources/css/app.css</code>:</p>
+      <pre><code>@theme {
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, Consolas, monospace;
+
+    /* Brand &mdash; pastel lime that matches reference */
+    --color-brand-50:  #f3fce0;
+    --color-brand-100: #e6f9b3;
+    --color-brand-200: #d3f483;
+    --color-brand-300: #bff15a;   /* primary CTA */
+    --color-brand-400: #b1ea3e;
+    --color-brand-500: #97d722;
+    --color-brand-600: #79b416;
+    --color-brand-700: #56850e;
+    --color-brand-ink: #0a0a0c;
+
+    /* Cyan accent &mdash; used in gradient headline */
+    --color-cy-300: #6ce7d2;
+    --color-cy-400: #4cd1c1;
+
+    /* Ink scale, calibrated for true near-black */
+    --color-ink-50:   #0a0c10;
+    --color-ink-100:  #0e1014;
+    --color-ink-200:  #14171c;
+    --color-ink-300:  #1a1d23;
+    --color-ink-400:  #232730;
+    --color-ink-500:  #353a47;
+    --color-ink-600:  #4a5160;
+    --color-ink-700:  #6b7281;
+    --color-ink-800:  #a8afbd;
+    --color-ink-900:  #ebeef3;
+
+    --color-progress:       #6f6df4;
+    --color-progress-track: rgba(110, 109, 244, 0.16);
+}</code></pre>
+      <p>Edit the hex values then rebuild the assets:</p>
+      <pre><code>npm install
+npm run build</code></pre>
+      <p>Tokens map directly to Tailwind utilities: <code>--color-brand-300</code> becomes <code>bg-brand-300</code>, <code>text-brand-300</code>, etc. The two surface scales (<code>--surface-*</code> and <code>--text-*</code>) are defined inside <code>@layer base</code> further down in the same file &mdash; tweak them to flip dark / light defaults.</p>
+      <div class="doc-callout doc-callout-info">
+        <strong>No rebuild needed for the primary CTA.</strong> The admin panel's <strong>Settings &rarr; Theme &rarr; Primary colour</strong> field overrides <code>--color-brand-300</code> at runtime via an inline style block. Use it for one-off tweaks; reach for the <code>@theme</code> block when you want the change baked into the production bundle.
+      </div>
+    </section>
+
+    <section id="logo">
+      <h2>Replacing the logo</h2>
+      <p>For the in-app logo (header and footer), upload from <strong>Admin &rarr; Settings &rarr; Brand &rarr; Logo</strong>; the file is saved to <code>storage/app/public/brand/</code> and a public symlink is created when you run <code>php artisan storage:link</code>. Both light and dark variants can be uploaded so the storefront swaps automatically.</p>
+    </section>
+
+    <section id="favicon">
+      <h2>Custom favicon &amp; Open Graph image</h2>
+      <p>Two static assets ship in <code>public/</code> and are referenced from every layout. Replace either file in place &mdash; no rebuild necessary because they're served directly:</p>
+      <div class="kv">
+        <dt><code>public/favicon.svg</code></dt><dd>The browser tab icon. Keep it square; 32&times;32 is the design target. SVG renders sharp at every size and supports automatic dark-mode flipping via <code>prefers-color-scheme</code>.</dd>
+        <dt><code>public/favicon.ico</code></dt><dd>Fallback for older browsers. Optional &mdash; modern browsers always prefer the SVG.</dd>
+        <dt><code>public/apple-touch-icon.png</code></dt><dd>180&times;180 PNG used by iOS when a visitor adds the site to their home screen.</dd>
+        <dt><code>public/og-image.png</code></dt><dd>The 1200&times;630 Open Graph card used by Twitter, Discord, Slack, and Facebook link previews. Keep important content centred in a 1200&times;600 safe area.</dd>
+        <dt><code>public/manifest.json</code></dt><dd>PWA manifest. Update <code>name</code>, <code>short_name</code>, and the <code>icons[]</code> paths if you rename the icon files.</dd>
+      </div>
+      <p>After replacing icons, hard-refresh (Cmd+Shift+R / Ctrl+F5) &mdash; browsers cache favicons very aggressively.</p>
+      <div class="doc-callout doc-callout-warn">
+        <strong>Reminder.</strong> Don't rely on <code>view:clear</code> for static assets &mdash; these files are served raw by your web server, never by Laravel, so the framework's cache commands have no effect on them.
+      </div>
+    </section>
+
+    <section id="emails">
+      <h2>Customising email templates</h2>
+      <p>All transactional emails live in <code>resources/views/emails/</code>:</p>
+      <div class="kv">
+        <dt><code>emails/swap_receipt.blade.php</code></dt><dd>Sent to the customer when a swap finishes.</dd>
+        <dt><code>emails/admin_swap_failed.blade.php</code></dt><dd>Sent to admins when a swap fails or gets flagged stuck.</dd>
+        <dt><code>emails/ticket_reply.blade.php</code></dt><dd>Sent when an admin replies to a support ticket.</dd>
+        <dt><code>emails/recurring_run.blade.php</code></dt><dd>Sent after a recurring (DCA) schedule fires.</dd>
+        <dt><code>emails/layout.blade.php</code></dt><dd>Shared shell &mdash; logo, footer, brand-coloured CTA button.</dd>
+      </div>
+      <p>The templates use standard Blade. Strings come from <code>lang/&lt;locale&gt;/emails.php</code> so translations stay in sync. After editing, clear the view cache:</p>
+      <pre><code>php artisan view:clear</code></pre>
+      <p>Preview an email locally without sending it:</p>
+      <pre><code>php artisan tinker --execute="\
+  echo (new \\App\\Mail\\SwapReceipt(\\App\\Models\\Transaction::first()))-&gt;render();"</code></pre>
+    </section>
+
+    <section id="components">
+      <h2>Deeper UI edits</h2>
+      <p>For component-level changes, the React source lives under <code>resources/js/</code>:</p>
+      <ul>
+        <li><code>resources/js/Pages/Home.tsx</code> &mdash; the main storefront page.</li>
+        <li><code>resources/js/Pages/Support.tsx</code> &mdash; the contact form.</li>
+        <li><code>resources/js/Pages/Track.tsx</code> &mdash; order tracking.</li>
+        <li><code>resources/js/components/exchange/</code> &mdash; the swap widget components (currency picker, amount input, address entry).</li>
+        <li><code>resources/js/layouts/PublicLayout.tsx</code> &mdash; header &amp; footer.</li>
+      </ul>
+      <p>After editing JS or CSS, rebuild the assets:</p>
+      <pre><code>npm install
+npm run build</code></pre>
+      <p>During development, use the Vite dev server for hot reload:</p>
+      <pre><code>npm run dev</code></pre>
+      <div class="callout">
+        <strong>Note.</strong> The admin panel pages live under <code>resources/js/Pages/Admin/</code> and follow the same convention. They use the same brand tokens, so colour changes propagate automatically.
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

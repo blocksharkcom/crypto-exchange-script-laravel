@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>API reference &mdash; CrossSwap Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/docs.css">
+<script>
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('crossswap-docs-theme'); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect x="2" y="2" width="28" height="28" rx="9" fill="url(#brandg)"/>
+          <path d="M11 11h7a3 3 0 0 1 3 3 3 3 0 0 1-3 3h-7l3 3M21 21h-7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h7l-3-3"
+                stroke="#0a0a0c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="brandg" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0" stop-color="#bff15a"/>
+              <stop offset="1" stop-color="#7be09a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand-name">CrossSwap</span>
+    </div>
+    <div class="nav-section"><span class="nav-section-num">01</span> Getting started</div>
+    <ul class="nav">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="install.html">Installation</a></li>
+      <li><a href="configure.html">Configuration</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">02</span> Building</div>
+    <ul class="nav">
+      <li><a href="customize.html">Customization</a></li>
+      <li><a href="api.html" class="active">API reference</a></li>
+    </ul>
+    <div class="nav-section"><span class="nav-section-num">03</span> Help</div>
+    <ul class="nav">
+      <li><a href="troubleshooting.html">Troubleshooting</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+    <button class="theme-toggle" type="button" onclick="(function(){var d=document.documentElement;var t=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('crossswap-docs-theme',t);}catch(e){}})()">
+      <span>Toggle dark mode</span><span aria-hidden="true">&#9680;</span>
+    </button>
+  </aside>
+  <main>
+    <header class="page-header">
+      <h1 id="top">API reference</h1>
+      <p class="lede">CrossSwap exposes a small REST proxy under <code>/api/*</code>. The storefront uses these endpoints; you can call them from your own clients too.</p>
+    </header>
+
+    <div class="callout" id="contents">
+      On this page:
+      <a href="#overview">Overview</a> &middot;
+      <a href="#exchange">Exchange</a> &middot;
+      <a href="#support">Support</a> &middot;
+      <a href="#chat">Chat</a> &middot;
+      <a href="#limit">Limit orders</a> &middot;
+      <a href="#recurring">Recurring</a> &middot;
+      <a href="#errors">Errors</a> &middot;
+      <a href="#ratelimits">Rate limits</a>
+    </div>
+
+    <section id="overview">
+      <h2>Overview</h2>
+      <ul>
+        <li>Base URL: <code>https://yourdomain.tld/api</code></li>
+        <li>Content type: <code>application/json</code> for both requests and responses.</li>
+        <li>Auth: anonymous for exchange / support / chat; the limit-order and recurring endpoints require a signed-in session (<code>auth:web</code>).</li>
+        <li>All amounts are floats; currency tickers are lowercase.</li>
+        <li>Rate-limited via Laravel's throttle middleware &mdash; see <a href="#ratelimits">Rate limits</a>.</li>
+      </ul>
+      <p>The ChangeNOW partner key the REST proxy uses is configured from the admin panel:</p>
+      <figure class="doc-figure">
+        <img src="img/admin-dashboard.png" alt="CrossSwap admin panel where the ChangeNOW API key, model selection, and referral address are configured.">
+        <figcaption>Settings &rarr; API &mdash; paste the partner key, optionally a referral address, then hit Test connection.</figcaption>
+      </figure>
+    </section>
+
+    <section id="exchange">
+      <h2>Exchange endpoints</h2>
+      <p>Public, anonymous. Rate-limited to <code>throttle:api</code> (60 req/min by default).</p>
+
+      <article class="endpoint" id="ex-currencies">
+        <p><span class="method get">GET</span><span class="path">/api/exchange/currencies</span></p>
+        <p>Returns the supported currency list. Cached for five minutes.</p>
+        <h4>Query parameters</h4>
+        <div class="kv">
+          <dt><code>flow</code></dt><dd>Optional. <code>standard</code> (default) or <code>fixed-rate</code>.</dd>
+        </div>
+        <h4>Example curl</h4>
+        <pre><code>curl https://yourdomain.tld/api/exchange/currencies?flow=standard</code></pre>
+        <h4>Example response</h4>
+        <pre><code>[
+  {
+    "ticker": "btc",
+    "name": "Bitcoin",
+    "network": "btc",
+    "image": "https://.../btc.svg",
+    "featured": true,
+    "has_external_id": false
+  }
+]</code></pre>
+      </article>
+
+      <article class="endpoint" id="ex-min">
+        <p><span class="method get">GET</span><span class="path">/api/exchange/min-amount</span></p>
+        <p>Minimum send amount for a pair. Cached for one minute.</p>
+        <h4>Query parameters</h4>
+        <div class="kv">
+          <dt><code>from</code></dt><dd>Source ticker, e.g. <code>btc</code>.</dd>
+          <dt><code>to</code></dt><dd>Destination ticker.</dd>
+          <dt><code>from_network</code></dt><dd>Optional network override.</dd>
+          <dt><code>to_network</code></dt><dd>Optional network override.</dd>
+          <dt><code>flow</code></dt><dd><code>standard</code> or <code>fixed-rate</code>.</dd>
+        </div>
+        <h4>Example curl</h4>
+        <pre><code>curl "https://yourdomain.tld/api/exchange/min-amount?from=btc&amp;to=eth&amp;flow=standard"</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{ "min_amount": 0.0005 }</code></pre>
+      </article>
+
+      <article class="endpoint" id="ex-estimate">
+        <p><span class="method get">GET</span><span class="path">/api/exchange/estimate</span></p>
+        <p>Returns the expected receive amount and live exchange rate.</p>
+        <h4>Query parameters</h4>
+        <div class="kv">
+          <dt><code>from</code></dt><dd>Source ticker.</dd>
+          <dt><code>to</code></dt><dd>Destination ticker.</dd>
+          <dt><code>amount</code></dt><dd>Send amount (float).</dd>
+          <dt><code>flow</code></dt><dd><code>standard</code> or <code>fixed-rate</code>.</dd>
+        </div>
+        <h4>Example curl</h4>
+        <pre><code>curl "https://yourdomain.tld/api/exchange/estimate?from=btc&amp;to=eth&amp;amount=0.05&amp;flow=fixed-rate"</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{
+  "from": "btc",
+  "to": "eth",
+  "amount_send": 0.05,
+  "amount_receive": 0.834120000000,
+  "rate_id": "f1a2...",
+  "valid_until": "2026-06-14T12:31:00+00:00",
+  "flow": "fixed-rate",
+  "warning": null
+}</code></pre>
+      </article>
+
+      <article class="endpoint" id="ex-create">
+        <p><span class="method post">POST</span><span class="path">/api/exchange/create</span></p>
+        <p>Creates a swap and stores it locally. Returns a CrossSwap transaction row.</p>
+        <h4>Request body</h4>
+        <pre><code>{
+  "from": "btc",
+  "to": "eth",
+  "amount": 0.05,
+  "address": "0x...",
+  "refund_address": "bc1q...",
+  "rate_id": "f1a2...",
+  "flow": "fixed-rate",
+  "email": "user@example.com"
+}</code></pre>
+        <h4>Example curl</h4>
+        <pre><code>curl -X POST https://yourdomain.tld/api/exchange/create \
+  -H "Content-Type: application/json" \
+  -d '{"from":"btc","to":"eth","amount":0.05,"address":"0x...","flow":"standard"}'</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{
+  "id": 42,
+  "provider_id": "abc123",
+  "status": "waiting",
+  "payin_address": "bc1q...",
+  "amount_send": 0.05,
+  "amount_receive": 0.8341,
+  "valid_until": "2026-06-14T12:31:00+00:00"
+}</code></pre>
+      </article>
+
+      <article class="endpoint" id="ex-status">
+        <p><span class="method get">GET</span><span class="path">/api/exchange/status/{id}</span></p>
+        <p>Returns the latest status for a transaction. <code>{id}</code> is the <code>provider_id</code> returned by <code>create</code>.</p>
+        <h4>Example curl</h4>
+        <pre><code>curl https://yourdomain.tld/api/exchange/status/abc123</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{
+  "provider_id": "abc123",
+  "status": "confirming",
+  "payin_hash": "txhash...",
+  "payout_hash": null,
+  "amount_receive": 0.834120
+}</code></pre>
+      </article>
+
+      <article class="endpoint" id="ex-validate">
+        <p><span class="method post">POST</span><span class="path">/api/exchange/validate</span></p>
+        <p>Checks whether an address looks valid for the given currency.</p>
+        <h4>Request body</h4>
+        <pre><code>{ "currency": "btc", "address": "bc1q..." }</code></pre>
+        <h4>Example curl</h4>
+        <pre><code>curl -X POST https://yourdomain.tld/api/exchange/validate \
+  -H "Content-Type: application/json" \
+  -d '{"currency":"btc","address":"bc1q..."}'</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{ "valid": true }</code></pre>
+      </article>
+    </section>
+
+    <section id="support">
+      <h2>Support</h2>
+      <article class="endpoint" id="sup-ticket">
+        <p><span class="method post">POST</span><span class="path">/api/support/ticket</span></p>
+        <p>Opens a support ticket. Used by the contact form.</p>
+        <h4>Request body</h4>
+        <pre><code>{
+  "email": "user@example.com",
+  "subject": "Swap is stuck",
+  "message": "...",
+  "tx_id": "abc123"
+}</code></pre>
+        <h4>Example curl</h4>
+        <pre><code>curl -X POST https://yourdomain.tld/api/support/ticket \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","subject":"Swap is stuck","message":"My swap..."}'</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 17, "status": "open" }</code></pre>
+      </article>
+    </section>
+
+    <section id="chat">
+      <h2>Chat</h2>
+      <article class="endpoint" id="chat-message">
+        <p><span class="method post">POST</span><span class="path">/api/chat/message</span></p>
+        <p>Send a message to the AI assistant and receive a streamed reply. Throttled to 20 requests per minute per IP.</p>
+        <h4>Request body</h4>
+        <pre><code>{
+  "history": [
+    {"role": "user", "content": "How long does a BTC -&gt; ETH swap take?"}
+  ]
+}</code></pre>
+        <h4>Example curl</h4>
+        <pre><code>curl -X POST https://yourdomain.tld/api/chat/message \
+  -H "Content-Type: application/json" \
+  -d '{"history":[{"role":"user","content":"hi"}]}'</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{
+  "reply": "Most BTC to ETH swaps complete in 15-30 minutes...",
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5"
+}</code></pre>
+      </article>
+    </section>
+
+    <section id="limit">
+      <h2>Limit orders</h2>
+      <p>Customer-only. Requires a signed-in session via <code>auth:web</code>; the request must include the CSRF token from <code>&lt;meta name="csrf-token"&gt;</code>. Rate-limited to <code>throttle:api</code>.</p>
+
+      <article class="endpoint">
+        <p><span class="method get">GET</span><span class="path">/api/limit-orders</span></p>
+        <p>Lists the signed-in customer's open and historical limit orders.</p>
+        <h4>Example response</h4>
+        <pre><code>[
+  {
+    "id": 12,
+    "from": "btc",
+    "to": "usdt",
+    "amount": 0.01,
+    "target_rate": 75000,
+    "status": "open",
+    "created_at": "2026-06-10T11:02:00+00:00"
+  }
+]</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/limit-orders</span></p>
+        <p>Creates a new limit order &mdash; fires when the live rate crosses <code>target_rate</code>.</p>
+        <h4>Request body</h4>
+        <pre><code>{
+  "from": "btc",
+  "to": "usdt",
+  "amount": 0.01,
+  "target_rate": 75000,
+  "address": "0x...",
+  "expires_at": "2026-07-01T00:00:00+00:00"
+}</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 12, "status": "open" }</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/limit-orders/{id}/cancel</span></p>
+        <p>Cancels a limit order before it fires. <code>{id}</code> is numeric.</p>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 12, "status": "cancelled" }</code></pre>
+      </article>
+    </section>
+
+    <section id="recurring">
+      <h2>Recurring (DCA) schedules</h2>
+      <p>Customer-only. Same auth + throttle rules as limit orders.</p>
+
+      <article class="endpoint">
+        <p><span class="method get">GET</span><span class="path">/api/recurring</span></p>
+        <p>Lists the signed-in customer's recurring (DCA) schedules.</p>
+        <h4>Example response</h4>
+        <pre><code>[
+  {
+    "id": 4,
+    "from": "usdt",
+    "to": "btc",
+    "amount": 50,
+    "interval": "weekly",
+    "next_run_at": "2026-06-21T10:00:00+00:00",
+    "status": "active"
+  }
+]</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/recurring</span></p>
+        <p>Creates a recurring schedule.</p>
+        <h4>Request body</h4>
+        <pre><code>{
+  "from": "usdt",
+  "to": "btc",
+  "amount": 50,
+  "interval": "weekly",
+  "address": "bc1q...",
+  "starts_at": "2026-06-14T10:00:00+00:00"
+}</code></pre>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 4, "status": "active" }</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/recurring/{id}/cancel</span></p>
+        <p>Cancels a recurring schedule. Past runs are preserved.</p>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 4, "status": "cancelled" }</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/recurring/{id}/pause</span></p>
+        <p>Pauses the schedule. Future runs are skipped until resumed.</p>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 4, "status": "paused" }</code></pre>
+      </article>
+
+      <article class="endpoint">
+        <p><span class="method post">POST</span><span class="path">/api/recurring/{id}/resume</span></p>
+        <p>Resumes a paused schedule. The <code>next_run_at</code> is recalculated from the original interval.</p>
+        <h4>Example response</h4>
+        <pre><code>{ "id": 4, "status": "active" }</code></pre>
+      </article>
+    </section>
+
+    <section id="errors">
+      <h2>Error responses</h2>
+      <p>All endpoints return a JSON error body on failure:</p>
+      <pre><code>{ "error": "min_amount", "message": "Amount is below the minimum for this pair." }</code></pre>
+      <p>HTTP status codes follow standard conventions: <code>400</code> for validation, <code>422</code> for upstream rejection, <code>429</code> when rate-limited, <code>502</code> when the upstream API is unreachable.</p>
+    </section>
+
+    <section id="ratelimits">
+      <h2>Rate limits</h2>
+      <p>The default <code>throttle:api</code> bucket is <strong>60 requests per minute per IP</strong>. The chat endpoint uses a stricter <strong>20 requests per minute per IP</strong> bucket because LLM calls are expensive.</p>
+      <p>Tune both in <code>app/Providers/AppServiceProvider.php</code> via the <code>RateLimiter::for('api', ...)</code> definition, or in <code>routes/api.php</code> at the middleware level.</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

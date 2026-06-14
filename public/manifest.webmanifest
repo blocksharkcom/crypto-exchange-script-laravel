@@ -1,0 +1,15 @@
+{
+    "name": "CrossSwap",
+    "short_name": "CrossSwap",
+    "description": "Cross-chain crypto exchange — swap any of 900+ tokens across 30+ blockchains, no account required.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#fbfbf7",
+    "theme_color": "#0d100f",
+    "lang": "en",
+    "icons": [
+        { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    ],
+    "categories": ["finance", "productivity"]
+}

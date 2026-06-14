@@ -1,0 +1,642 @@
+/*
+ * CrossSwap offline documentation styles.
+ *
+ * Token-aligned with resources/css/app.css so the docs feel like part of
+ * the storefront. Dark is the default; `[data-theme='light']` flips palette.
+ * Inter is loaded via the system stack — no CDN, no @import.
+ */
+
+:root {
+    color-scheme: dark;
+    /* Surfaces */
+    --bg:            #0a0c10;
+    --bg-soft:       #14171c;
+    --bg-elev:       #1a1d23;
+    --bg-input:      #0a0c10;
+    /* Text */
+    --fg:            #ebeef3;
+    --fg-soft:       #a8afbd;
+    --fg-mute:       #6b7281;
+    --fg-faint:      #4a5160;
+    /* Hairlines */
+    --line-1:        rgba(255, 255, 255, 0.04);
+    --line-2:        rgba(255, 255, 255, 0.07);
+    --line-3:        rgba(255, 255, 255, 0.13);
+    /* Brand */
+    --brand:         #bff15a;
+    --brand-soft:    #d3f483;
+    --brand-ink:     #0a0a0c;
+    --cyan:          #6ce7d2;
+    --indigo:        #6f6df4;
+    --warn:          #f6b95a;
+    --warn-bg:       rgba(246, 185, 90, 0.10);
+    --warn-border:   rgba(246, 185, 90, 0.30);
+    --danger:        #ff7a7a;
+    /* Code */
+    --code-bg:       #0a0c10;
+    --code-fg:       #ebeef3;
+    --code-keyword:  #bff15a;
+    --code-string:   #6ce7d2;
+    --code-number:   #cdc8ff;
+    --code-comment:  #6b7281;
+    --code-punct:    #a8afbd;
+    --shadow:        0 30px 80px -40px rgba(0, 0, 0, 0.75),
+                     0 12px 30px -16px rgba(0, 0, 0, 0.55),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+[data-theme='light'] {
+    color-scheme: light;
+    --bg:            #f6f7fb;
+    --bg-soft:       #ffffff;
+    --bg-elev:       #ffffff;
+    --bg-input:      #f5f7fb;
+    --fg:            #0a0c10;
+    --fg-soft:       #4a5160;
+    --fg-mute:       #6b7382;
+    --fg-faint:      #9aa1b1;
+    --line-1:        rgba(10, 12, 16, 0.06);
+    --line-2:        rgba(10, 12, 16, 0.10);
+    --line-3:        rgba(10, 12, 16, 0.16);
+    --code-bg:       #0a0c10;
+    --code-fg:       #ebeef3;
+    --shadow:        0 24px 60px -28px rgba(15, 23, 42, 0.18),
+                     0 8px 22px -10px rgba(15, 23, 42, 0.10);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100%;
+}
+
+body {
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Ambient brand glow — same effect as the public site */
+body::before {
+    content: '';
+    position: fixed;
+    inset: -10vh -10vw -10vh -10vw;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(40rem 26rem at 50% 38%, rgba(140, 220, 130, 0.10), transparent 70%),
+        radial-gradient(28rem 22rem at 20% 80%, rgba(120, 200, 220, 0.05), transparent 75%),
+        radial-gradient(24rem 18rem at 88% 18%, rgba(150, 220, 110, 0.06), transparent 75%);
+    filter: blur(8px);
+}
+
+[data-theme='light'] body::before { opacity: 0.5; }
+
+a {
+    color: var(--brand);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 120ms ease-out, color 120ms ease-out;
+}
+
+a:hover {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+}
+
+/* ---------- Layout ---------- */
+.layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: sticky; top: 0; z-index: 5; height: auto; }
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    background: transparent;
+    border-right: 1px solid var(--line-1);
+    padding: 24px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 18px;
+    border-bottom: 1px solid var(--line-1);
+    margin-bottom: 18px;
+}
+
+.brand-mark {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+}
+
+.nav { list-style: none; padding: 0; margin: 0; }
+.nav li { margin: 0; }
+
+.nav a {
+    display: block;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--fg-soft);
+    font-size: 14px;
+    border-bottom: 0;
+    transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.nav a:hover {
+    background: var(--bg-soft);
+    color: var(--fg);
+    border-bottom: 0;
+}
+
+.nav a.active {
+    background: var(--bg-soft);
+    color: var(--fg);
+    font-weight: 600;
+    position: relative;
+}
+
+.nav a.active::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(111, 109, 244, 0.18);
+}
+
+.nav-section {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-mute);
+    font-weight: 600;
+    margin: 22px 10px 8px;
+}
+
+.nav-section .nav-section-num {
+    color: var(--indigo);
+    font-weight: 700;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.theme-toggle {
+    margin-top: 22px;
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--bg-soft);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    color: var(--fg-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+.theme-toggle:hover { color: var(--fg); border-color: var(--line-3); }
+
+/* ---------- Main column ---------- */
+main {
+    padding: 40px 56px 96px;
+    max-width: 960px;
+    min-width: 0;
+}
+
+@media (max-width: 720px) {
+    main { padding: 28px 20px 64px; }
+}
+
+/* ---------- Headings ---------- */
+h1, h2, h3, h4 {
+    color: var(--fg);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+}
+h1 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 10px; line-height: 1.15; }
+h2 {
+    font-size: 22px;
+    margin: 44px 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-1);
+}
+h3 { font-size: 17px; margin: 28px 0 8px; }
+h4 { font-size: 14px; margin: 18px 0 6px; color: var(--fg-soft); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+
+.lede {
+    font-size: 17px;
+    color: var(--fg-soft);
+    margin: 0 0 32px;
+    max-width: 70ch;
+    line-height: 1.6;
+}
+
+p, ul, ol { margin: 12px 0; max-width: 72ch; }
+ul, ol { padding-left: 22px; }
+li { margin: 4px 0; color: var(--fg-soft); }
+li strong { color: var(--fg); }
+p strong { color: var(--fg); }
+
+/* ---------- Code ---------- */
+code, kbd, pre, samp {
+    font-family: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+}
+
+/* Inline code — small chip on surface-card-2 */
+code {
+    background: var(--bg-elev);
+    color: var(--fg);
+    padding: 2px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--line-2);
+    font-size: 0.85em;
+}
+
+a code { color: var(--brand); border-color: var(--line-2); }
+
+/* Block code — very dark surface with lime keyword highlights via classes */
+pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 20px;
+    border-radius: 14px;
+    overflow-x: auto;
+    margin: 16px 0 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-1);
+    line-height: 1.55;
+}
+pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    border: 0;
+    font-size: 13px;
+}
+
+/* Fixed code-highlight scheme — no Prism, no highlight.js.
+   Authors can opt-in by wrapping spans, but plain <pre><code> still looks brand. */
+pre .tok-k, pre .keyword  { color: var(--code-keyword); font-weight: 600; }
+pre .tok-s, pre .string   { color: var(--code-string); }
+pre .tok-n, pre .number   { color: var(--code-number); }
+pre .tok-c, pre .comment  { color: var(--code-comment); font-style: italic; }
+pre .tok-p, pre .punct    { color: var(--code-punct); }
+
+/* ---------- Callouts ---------- */
+.callout {
+    border-left: 3px solid var(--brand);
+    background: var(--bg-soft);
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--fg-soft);
+    line-height: 1.6;
+    border: 1px solid var(--line-1);
+    border-left-width: 3px;
+}
+.callout strong { color: var(--fg); }
+.callout.warn   { border-left-color: var(--warn); background: var(--warn-bg); }
+.callout.danger { border-left-color: var(--danger); }
+
+/* ---------- Tables ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+    border: 1px solid var(--line-1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-1);
+}
+th {
+    font-weight: 600;
+    background: var(--bg-soft);
+    color: var(--fg-mute);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+tr:last-child td { border-bottom: 0; }
+td { color: var(--fg-soft); }
+td strong { color: var(--fg); }
+
+/* ---------- Figures (placeholder boxes) ---------- */
+figure {
+    margin: 24px 0;
+    border: 1px dashed var(--line-3);
+    border-radius: 16px;
+    padding: 32px 22px;
+    text-align: center;
+    background: transparent;
+    color: var(--fg-mute);
+    font-size: 13px;
+}
+figure svg { opacity: 0.5; }
+figcaption {
+    margin-top: 12px;
+    font-style: italic;
+    color: var(--fg-mute);
+}
+
+/* ---------- Real screenshot figures ---------- */
+.doc-figure {
+    margin: 22px 0;
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    padding: 10px;
+    text-align: center;
+    background: var(--bg-soft);
+    color: var(--fg-mute);
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.doc-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line-1);
+    background: var(--bg);
+}
+.doc-figure figcaption {
+    margin: 10px 6px 4px;
+    font-style: normal;
+    color: var(--fg-mute);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+.doc-figure figcaption strong { color: var(--fg-soft); }
+
+/* Existing legacy <figure><img></figure> usage on the index page — keep working */
+figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    margin: 0 auto;
+}
+
+/* 2-column screenshot grid */
+.doc-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: 22px 0;
+}
+.doc-grid-2 > .doc-figure { margin: 0; }
+@media (max-width: 720px) {
+    .doc-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Stronger callouts ---------- */
+.doc-callout {
+    border: 1px solid var(--line-2);
+    border-left: 3px solid var(--brand);
+    background: var(--bg-soft);
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--fg-soft);
+    line-height: 1.6;
+}
+.doc-callout strong { color: var(--fg); }
+.doc-callout-info {
+    border-left-color: var(--indigo);
+    background: rgba(111, 109, 244, 0.07);
+}
+.doc-callout-warn {
+    border-left-color: var(--warn);
+    background: var(--warn-bg);
+    border-color: var(--warn-border);
+}
+.doc-callout-warn strong { color: var(--warn); }
+
+/* ---------- Demo-credentials box ---------- */
+.doc-creds {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    background: var(--bg-soft);
+    padding: 16px 18px;
+    margin: 20px 0;
+    box-shadow: var(--shadow);
+}
+.doc-creds h4 {
+    margin: 0 0 4px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--fg);
+    font-size: 14px;
+}
+.doc-creds .cred-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--fg-soft);
+}
+.doc-creds .cred-row span { display: inline-flex; align-items: baseline; gap: 6px; }
+.doc-creds .cred-row b { color: var(--brand); font-weight: 600; }
+
+/* ---------- Quick-link grid (used on index) ---------- */
+.doc-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 22px 0;
+}
+.doc-quick-grid a.doc-quick-card {
+    display: block;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    color: var(--fg);
+    font-weight: 600;
+    border-bottom: 0;
+    transition: border-color 120ms ease-out, transform 120ms ease-out;
+}
+.doc-quick-grid a.doc-quick-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-1px);
+    color: var(--fg);
+}
+.doc-quick-grid a.doc-quick-card span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--fg-mute);
+    font-weight: 400;
+}
+
+/* ---------- Step list (used in walkthroughs) ---------- */
+.doc-step-meta {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    font-weight: 700;
+    margin-right: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Page header ---------- */
+.page-header {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line-1);
+}
+
+/* ---------- TOC grid (cards) ---------- */
+.toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 28px 0;
+}
+.toc-card {
+    padding: 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line-1);
+    border-radius: 18px;
+    transition: border-color 120ms ease-out, transform 120ms ease-out;
+}
+.toc-card:hover {
+    border-color: var(--line-3);
+    transform: translateY(-1px);
+}
+.toc-card a {
+    color: var(--fg);
+    font-weight: 600;
+    border-bottom: 0;
+}
+.toc-card a:hover { color: var(--brand); border-bottom: 0; }
+.toc-card p { margin: 6px 0 0; font-size: 13px; color: var(--fg-mute); max-width: none; }
+
+/* ---------- Key/value (definition pairs) ---------- */
+.kv {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 6px 16px;
+    font-size: 14px;
+    margin: 12px 0;
+}
+.kv dt { color: var(--fg-mute); }
+.kv dd { margin: 0; color: var(--fg-soft); }
+.kv dd strong { color: var(--fg); }
+
+/* ---------- API endpoints ---------- */
+.endpoint {
+    border: 1px solid var(--line-1);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    background: var(--bg-soft);
+    box-shadow: var(--shadow);
+}
+.method {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-right: 10px;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.method.get  { background: rgba(110, 109, 244, 0.18); color: #b9b7ff; }
+.method.post { background: rgba(191, 241, 90, 0.18); color: var(--brand); }
+.path {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    color: var(--fg);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--line-1);
+    margin: 36px 0;
+}
+
+/* ---------- Right-side mini TOC (optional) ---------- */
+.right-toc {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    font-size: 13px;
+    color: var(--fg-mute);
+    padding-left: 16px;
+    border-left: 1px solid var(--line-1);
+    max-width: 220px;
+}
+.right-toc .label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-mute);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 11px;
+}
+.right-toc ul { list-style: none; padding: 0; margin: 0; }
+.right-toc li { margin: 6px 0; }
+.right-toc a { color: var(--fg-soft); border-bottom: 0; font-size: 13px; }
+.right-toc a:hover { color: var(--fg); border-bottom: 0; }

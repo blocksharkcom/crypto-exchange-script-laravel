@@ -1,166 +1,148 @@
-# CrossSwap
+# Cross-Chain Crypto Exchange Script (Laravel + React)
 
-**Cross-Chain Multi-Blockchain Exchange with ChangeNOW Integration**
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL_3.0-blue.svg)](LICENSE)
+[![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel)](https://laravel.com)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
+[![Live demo](https://img.shields.io/badge/demo-cross--swap.blockshark.com-22c55e)](https://cross-swap.blockshark.com)
 
-A self-hosted, production-grade crypto exchange script. Buyers can launch a
-no-custody, no-KYC swap business in under 10 minutes, earn a commission on
-every swap, and run the whole thing from a single PHP host.
+A self-hosted, non-custodial cross-chain crypto swap interface built on
+Laravel 12 + React 19, with ChangeNOW v2 integration. Ships with a full admin
+panel, multi-locale CMS, web installer, helpdesk, AI chat widget, customer
+accounts, limit orders, and recurring (DCA) swaps. Operators run a branded
+swap interface across 30+ chains without custody, KYC, or liquidity provision.
 
-Live demo: see your CodeCanyon item description. Demo credentials: `admin@demo.com` / `user@demo.com` (password `password!321`).
+> **Need a custom build, white-label deployment, or commercial license?**
+> [Blockshark](https://blockshark.com) ships production crypto infrastructure
+> on demand. → [blockshark.com/contact](https://blockshark.com/contact)
 
----
+## Live demo
 
-## What's inside
+**[cross-swap.blockshark.com](https://cross-swap.blockshark.com)**
 
-- **Public swap card** — 4-step flow (pair → address → deposit → done) on every breakpoint.
-- **Limit orders** and **Recurring (DCA) swaps** alongside the instant exchange.
-- **Rate slider on limit orders** — target rate is a slider (-50% to +200% around the live market rate) with quick chips (-10%, -5%, Market, +10%, +25%); market rate is fetched on pair change so the slider is anchored before amount entry.
-- **Customer accounts** — optional sign-up, dashboard with lifetime swaps / fees / volume, swap history, ticket inbox, settings.
-- **Real ChangeNOW v2 integration** — currencies, estimate, min-amount, create, status sync, address validation.
-- **Typewriter hero headline** — animated multi-word cycle on the homepage, localized across all shipped languages and respecting `prefers-reduced-motion`.
-- **Searchable help center** — 5 categories, 17 articles, full-text search, ticket portal with magic-link reply.
-- **AI live chat widget** — provider abstraction (OpenAI / Anthropic / disabled).
-- **Advanced admin panel** — dashboard, KPIs, stuck-swap monitor, audit log, ticket queue, API management, settings.
-- **Multi-locale Pages CMS** — per-locale title/excerpt/body via a `page_translations` table; admin Edit screen uses a locale-tab pill strip with filled-dot completeness indicators; public `/p/{slug}` resolves the active locale with fallback to the default locale and then to legacy columns.
-- **Editable marketing-content sections (Content CMS)** — admins edit four homepage sections per locale without touching code: Highlights (4 value props under the hero), Reviews carousel (3-at-a-time), Stats counter (animated tiles), and How it works (4-step walkthrough). Backed by a `content_sections` table with sensible defaults so a clean install still renders the homepage.
-- **Markdown editor in admin Pages** — tabbed Write/Preview UI with a toolbar (heading, bold, italic, code, list, numbered, link, quote), no external editor dependency.
-- **Web-based installer** — requirements check, DB wizard, admin account, brand, API key probe.
-- **Offline documentation** under `/documentation/`.
-- 4 language packs out of the box: English, Spanish, German, French.
-- Light + dark theme.
-- Branded error pages (404 / 419 / 500 / 503).
-- Background jobs + scheduled tasks for status sync and stuck-swap detection.
+| Account  | Email           | Password    |
+|----------|-----------------|-------------|
+| Admin    | admin@demo.com  | password!321 |
+| Customer | user@demo.com   | password!321 |
 
----
+The demo is wired to a real ChangeNOW partner key — every rate, currency, and
+estimate is live.
 
-## Requirements
+## What it does
 
-- PHP **8.2** or later
-- Composer 2.x
-- Node.js 20+ (only needed if you want to rebuild assets)
-- A relational DB: **SQLite** (default), MySQL 8, or PostgreSQL 14+
-- (Optional, recommended for production) Redis for Horizon-backed queues
-- A ChangeNOW partner API key — free at <https://changenow.io/affiliate>
+- Four-step swap card (pair → address → deposit → done) on every breakpoint.
+- Limit orders and recurring (DCA) swaps alongside instant swaps.
+- Customer accounts with lifetime swap volume, fees paid, swap history,
+  ticket inbox, and 2FA.
+- Hand-rolled admin: dashboard with KPIs and 14-day chart, transactions table,
+  stuck-swap monitor, audit log, ticket queue, user management, mass-email
+  campaigns, multi-locale Content CMS, multi-locale Pages CMS with a tabbed
+  Markdown editor, settings tabs for brand / theme / mail / currencies / API /
+  AI chat / security.
+- AI chat widget with OpenAI / Anthropic provider abstraction (optional).
+- Searchable help center with categorized articles + ticket portal +
+  magic-link email reply.
+- Branded error pages, signed routes, Spatie CSP, Spatie Permissions,
+  Owen-It Audit, Horizon-backed queues.
+- Web installer: seven-step wizard with requirements check, DB setup,
+  ChangeNOW key probe, and finalize lock.
+- Four locales out of the box (English, Spanish, German, French) at full
+  key parity. Adding a new locale is one PHP file.
 
----
+## Quick start
 
-## Installation
-
-The fastest path is the **web installer**.
-
-1. Upload the contents of this archive to your web root.
-2. Point your domain at `/public`.
-3. Copy `.env.example` to `.env` and run `php artisan key:generate`.
-4. Visit `https://your-domain.com/install` in a browser.
-5. Walk through the wizard:
-   - Requirements check
-   - Database connection
-   - Admin account creation
-   - Branding
-   - ChangeNOW API key
-6. On the final step you'll be redirected straight into the admin panel.
-
-Full installation, configuration, customisation, API reference, and troubleshooting docs ship offline at `/documentation/` once the project is uploaded.
-
-### Manual install
-
-If you prefer the CLI:
+Requires PHP 8.2+, Composer 2, Node 20 (only if rebuilding assets), and
+one of SQLite / MySQL 8 / MariaDB 10.6 / PostgreSQL 14+.
 
 ```bash
+git clone https://github.com/blocksharkcom/crypto-exchange-script-laravel.git
+cd crypto-exchange-script-laravel
 composer install --no-dev --optimize-autoloader
 cp .env.example .env
 php artisan key:generate
-# edit .env to set DB, MAIL, CHANGENOW_API_KEY
-php artisan migrate --force
-php artisan db:seed --class=AdminRolesSeeder --force
 ```
 
-Then visit `/install` to create the admin account and finalize.
+Point your web server at the `public/` directory, then open
+`https://your-domain.com/install` in a browser. The seven-step wizard handles
+the rest. Full documentation is in [`public/documentation/`](public/documentation/).
 
----
+## Requirements
 
-## Operating in production
+- PHP **8.2+** with extensions: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`,
+  `json`, `mbstring`, `openssl`, `pcre`, `pdo` (+ one of `pdo_sqlite`,
+  `pdo_mysql`, `pdo_pgsql`), `tokenizer`, `xml`, `zip`, `intl`, `sodium`, and
+  either `gd` or `imagick`.
+- Composer 2.x.
+- Node.js 20+ (only if you want to recompile the frontend).
+- A relational database.
+- Apache 2.4+ or Nginx 1.20+.
+- Outbound HTTPS to `api.changenow.io`.
+- A free ChangeNOW partner API key (sign up at
+  [changenow.io/affiliate](https://changenow.io/affiliate)).
+- Recommended: Redis + Laravel Horizon for queues and cache.
 
-### Queue worker
+## How it works
 
-The platform schedules background jobs every minute (limit-order polling) and every
-5 minutes (recurring schedules). A queue worker must be running.
+1. A visitor opens the storefront. The React 19 + Inertia frontend loads from
+   your domain, served by Laravel.
+2. They pick a pair. Laravel calls the ChangeNOW currencies and estimate
+   endpoints server-side, caches the result, and returns the live rate.
+3. They paste a destination address. Laravel asks ChangeNOW to validate the
+   address format.
+4. On submit, Laravel creates a ChangeNOW exchange, persists the transaction,
+   and returns a unique one-time deposit address.
+5. The customer sends the deposit on-chain. A queued job polls the ChangeNOW
+   status endpoint until the swap reaches a terminal state.
+6. ChangeNOW settles the trade and pays out directly to the destination.
+   No customer funds touch your server.
 
-With Horizon (recommended):
-```bash
-php artisan horizon
-```
+## Stack
 
-With the default driver:
-```bash
-php artisan queue:work --tries=3 --timeout=60
-```
+| Layer           | Tech                                                    |
+|-----------------|---------------------------------------------------------|
+| Backend         | Laravel 12 (PHP 8.2+)                                   |
+| Frontend        | React 19 + Inertia v2 + TypeScript (strict)             |
+| Styling         | Tailwind CSS v4 with `@theme` brand tokens              |
+| Exchange engine | ChangeNOW v2 partner API                                |
+| Database        | SQLite (default), MySQL, MariaDB, PostgreSQL            |
+| Cache / queues  | Redis + Horizon (recommended) or database driver        |
+| Auth            | Separate guards for customers (web) and admins (admin)  |
+| Permissions     | Spatie Laravel Permission                               |
+| Audit log       | Owen-It Laravel Auditing                                |
+| CSP             | Spatie Laravel CSP                                      |
 
-### Scheduler
+## Documentation
 
-Add this cron entry to your server:
-```cron
-* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
-```
+- `public/documentation/index.html` — full HTML reference.
+- `public/documentation/CrossSwap-Documentation.pdf` — printable PDF.
+- Covers: requirements, installation, configuration, branding, translations,
+  features management, updates, and common issues.
 
-### Mail
+## Commercial use & custom development
 
-Edit `.env` to configure SMTP. Receipts, ticket replies, and stuck-swap alerts all go through Laravel's mail system.
+This project is licensed under the **GNU AGPL-3.0**. That's fine for personal
+projects, internal company use, open-source forks, and any deployment where you
+publish your modifications.
 
-### Updates
+If you want to:
 
-When CodeCanyon publishes an update, re-download the archive, replace files,
-preserve your `.env` + `storage/` + `database/database.sqlite` (or your real DB),
-then run:
+- Deploy as a closed-source SaaS without releasing your modifications,
+- Bundle this into a proprietary product or white-label it for a client,
+- Get a custom integration, feature, or full re-skin,
+- Get a managed production deployment with monitoring and incident response,
 
-```bash
-php artisan migrate --force
-php artisan optimize:clear
-```
+then [**Blockshark**](https://blockshark.com) sells commercial licenses and
+ships custom crypto-product engineering on demand.
 
----
+→ **[Contact us at blockshark.com/contact](https://blockshark.com/contact)**
 
-## Packaging an update for CodeCanyon
+See [COMMERCIAL.md](COMMERCIAL.md) for details.
 
-If you are the author re-bundling the archive:
+## Sponsors
 
-```bash
-npm run build
-php artisan crossswap:prepare-archive   # wipes sensitive data
-bin/package-codecanyon.sh 1.0.0          # produces dist/crossswap-1.0.0.zip
-```
+<a href="https://blockshark.com"><strong>Blockshark</strong></a> — custom
+crypto infrastructure, smart-contract review, and managed deployments.
 
-`prepare-archive` removes the install lock, sensitive settings rows, sessions, caches and the SQLite database, then leaves a clean placeholder for the buyer.
+## License
 
----
-
-## Earning on every swap
-
-ChangeNOW pays partners a percentage of the spread on every successful swap
-placed through your API key. By default partners earn **~0.4% of swap volume**;
-rate goes up with volume and top partners negotiate custom tiers.
-
-- Sign up: <https://changenow.io/affiliate>
-- API documentation: <https://documenter.getpostman.com/view/8180765/SVfTPnM8>
-- Track your share inside the admin panel: **API Management → Partner stats**.
-
----
-
-## Support
-
-Support is provided to CodeCanyon buyers via the item's comments tab. Please include:
-
-- Your CodeCanyon username
-- The exact PHP version (`php -v`)
-- The exact error message + screenshots
-- Any custom code you added near the issue
-
----
-
-## Licence
-
-See `LICENSE.md`.
-
-## Changelog
-
-See `CHANGELOG.md`.
+[GNU AGPL-3.0](LICENSE). Maintained by [Blockshark](https://blockshark.com).
+For commercial licensing, [get in touch](https://blockshark.com/contact).

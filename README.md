@@ -11,6 +11,12 @@ panel, multi-locale CMS, web installer, helpdesk, AI chat widget, customer
 accounts, limit orders, and recurring (DCA) swaps. Operators run a branded
 swap interface across 30+ chains without custody, KYC, or liquidity provision.
 
+<p align="center">
+  <a href="https://cross-swap.blockshark.com">
+    <img src=".github/img/home-hero.png" alt="CrossSwap storefront with the swap card and live ChangeNOW rates" width="900"/>
+  </a>
+</p>
+
 > **Need a custom build, white-label deployment, or commercial license?**
 > [Blockshark](https://blockshark.com) ships production crypto infrastructure
 > on demand. → [blockshark.com/contact](https://blockshark.com/contact)
@@ -38,6 +44,12 @@ estimate is live.
   campaigns, multi-locale Content CMS, multi-locale Pages CMS with a tabbed
   Markdown editor, settings tabs for brand / theme / mail / currencies / API /
   AI chat / security.
+
+<p align="center">
+  <img src=".github/img/admin-dashboard.png" alt="Admin dashboard with KPIs, 14-day chart, recent transactions" width="48%"/>
+  <img src=".github/img/admin-content.png" alt="Multi-locale Content CMS for the four homepage marketing blocks" width="48%"/>
+</p>
+
 - AI chat widget with OpenAI / Anthropic provider abstraction (optional).
 - Searchable help center with categorized articles + ticket portal +
   magic-link email reply.

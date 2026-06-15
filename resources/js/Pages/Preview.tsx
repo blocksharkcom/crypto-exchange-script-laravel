@@ -26,8 +26,6 @@ export default function Preview() {
     const { props } = usePage<PageProps>();
     const brand = props.brand.name;
     const buyUrl = props.codecanyonUrl;
-    const affUrl = props.changenowAffiliateUrl;
-    const apiUrl = props.changenowApiDocsUrl;
 
     return (
         <PublicLayout>
@@ -40,8 +38,6 @@ export default function Preview() {
             <FeatureGrid />
             <VisualTour />
             <SwapFlow />
-            <EarnSection affUrl={affUrl} />
-            <ChangeNowSetup affUrl={affUrl} apiUrl={apiUrl} brand={brand} />
             <TechSpecs />
             <Faq />
             <FinalCta brand={brand} buyUrl={buyUrl} />
@@ -55,19 +51,32 @@ function Hero({ brand, buyUrl }: { brand: string; buyUrl: string }) {
     const t = useT();
     const bullets = usePropArray<TLine>('preview.hero.bullets');
     return (
-        <section className="relative pt-12 sm:pt-20 pb-10">
-            <div className="container-edge grid lg:grid-cols-[1.05fr_1fr] gap-10 items-center">
-                <div>
-                    <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold text-[color:var(--color-progress)] surface-card-2 border border-line-2 rounded-full px-3 py-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-progress)]" />
+        <section className="relative pt-12 sm:pt-20 pb-14 sm:pb-24 overflow-hidden">
+            {/* Ambient brand glow behind the hero */}
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -z-10"
+                style={{
+                    background:
+                        'radial-gradient(60rem 38rem at 78% 38%, rgba(191,241,90,0.22), transparent 65%),' +
+                        'radial-gradient(40rem 28rem at 18% 80%, rgba(90,214,166,0.10), transparent 70%)',
+                    filter: 'blur(30px)',
+                }}
+            />
+            <div className="container-edge grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                {/* TEXT — left column, 5/12 on desktop so the image gets more room */}
+                <div className="lg:col-span-5 max-w-xl">
+                    <div className="inline-flex items-center gap-3 text-[12px] tracking-[0.02em] font-semibold text-muted-2">
+                        <span className="block h-px w-8 bg-[color:var(--color-progress)]" />
                         {t('preview.eyebrow')}
                     </div>
-                    <h1 className="mt-5 text-4xl sm:text-5xl lg:text-[68px] font-extrabold tracking-tight leading-[1.04]">
+                    <h1 className="mt-5 font-extrabold tracking-tight leading-[1.08]
+                        text-[28px] sm:text-[34px] lg:text-[40px] xl:text-[46px]">
                         <span className="text-[color:var(--text-1)] block">{t('preview.hero.title_a')}</span>
                         <span className="text-gradient-brand block">{t('preview.hero.title_b')}</span>
                         <span className="text-[color:var(--text-1)] block">{t('preview.hero.title_c')}</span>
                     </h1>
-                    <p className="mt-5 text-lg text-muted-2 max-w-xl">
+                    <p className="mt-5 text-base sm:text-lg text-muted-2">
                         {t('preview.hero.body', { brand })}
                     </p>
 
@@ -80,7 +89,7 @@ function Hero({ brand, buyUrl }: { brand: string; buyUrl: string }) {
                         <a href="/" className="cta cta-ghost !w-auto px-6">{t('preview.hero.demo')}</a>
                     </div>
 
-                    <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-2">
+                    <ul className="mt-8 grid grid-cols-2 gap-x-5 gap-y-2.5 text-sm text-muted-2">
                         {bullets.map((b) => (
                             <li key={b} className="inline-flex items-center gap-1.5">
                                 <Check width={14} height={14} className="text-[color:var(--color-brand-300)]" />
@@ -90,17 +99,23 @@ function Hero({ brand, buyUrl }: { brand: string; buyUrl: string }) {
                     </ul>
                 </div>
 
-                <div className="relative">
-                    <div className="absolute -inset-12 -z-10"
-                         style={{ background: 'radial-gradient(closest-side, rgba(191,241,90,.35), transparent 70%)', filter: 'blur(40px)' }} aria-hidden />
-                    <BrowserFrame url={`${brand.toLowerCase()}.app`}>
-                        <img
-                            src={SHOT('home-hero')}
-                            alt={`${brand} live homepage`}
-                            className="block w-full h-auto"
-                            loading="eager"
-                        />
-                    </BrowserFrame>
+                {/* IMAGE — right column, 7/12 on desktop, breaks out of the gutter on xl */}
+                <div className="lg:col-span-7 relative">
+                    <div
+                        className="absolute -inset-10 sm:-inset-16 -z-10 opacity-80"
+                        style={{ background: 'radial-gradient(closest-side, rgba(191,241,90,.42), transparent 72%)', filter: 'blur(48px)' }}
+                        aria-hidden
+                    />
+                    <div className="lg:-mr-8 xl:-mr-16">
+                        <BrowserFrame url={`${brand.toLowerCase()}.app`}>
+                            <img
+                                src={SHOT('home-hero')}
+                                alt={`${brand} live homepage`}
+                                className="block w-full h-auto"
+                                loading="eager"
+                            />
+                        </BrowserFrame>
+                    </div>
                 </div>
             </div>
         </section>

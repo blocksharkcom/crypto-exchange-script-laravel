@@ -334,7 +334,7 @@ return [
 
     'preview' => [
         'meta_title' => ':brand — Cross-chain crypto exchange script',
-        'eyebrow' => 'CodeCanyon · Cross-chain crypto exchange',
+        'eyebrow' => 'CrossSwap',
         'demo' => [
             'eyebrow' => 'Demo credentials',
             'intro' => 'Use these accounts to explore the live demo. Both the customer dashboard and the admin panel are wired up to the real ChangeNOW API.',
@@ -348,14 +348,14 @@ return [
             'title_a' => 'A complete cross-chain',
             'title_b' => 'crypto exchange,',
             'title_c' => 'in one purchase.',
-            'body' => ':brand is a production-ready Laravel 12 + React 19 SaaS that lets you launch a no-custody, no-KYC crypto exchange in under 10 minutes. Powered by ChangeNOW, wired with an AI helpdesk, an advanced admin panel, and an affiliate revenue model that earns on every swap.',
+            'body' => ':brand is a self-hosted Laravel 12 + React 19 application that lets you launch a non-custodial, no-KYC crypto exchange in under 10 minutes. Powered by ChangeNOW, with an AI helpdesk and a complete admin panel.',
             'buy' => 'Buy on CodeCanyon',
             'demo' => 'View live demo',
             'bullets' => [
-                'Earn on every swap',
-                'Free ChangeNOW key',
+                'Non-custodial swap engine',
                 '900+ tokens, 30+ chains',
                 'One-click installer',
+                'Multi-locale storefront',
             ],
         ],
         'trust' => [
@@ -478,7 +478,7 @@ return [
         'cta' => [
             'title_a' => 'Launch your exchange',
             'title_b' => 'this weekend.',
-            'body' => ':brand is a one-time purchase. Set it up once, earn on every swap forever.',
+            'body' => ':brand is a one-time purchase. Install it once and own the codebase.',
         ],
     ],
 

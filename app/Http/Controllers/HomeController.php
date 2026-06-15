@@ -13,10 +13,14 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function index(): Response
+    public function index(ExchangeService $exchange): Response
     {
         return Inertia::render('Home', [
             'featured' => array_values(array_unique(array_map('strtolower', (array) config('swapforge.featured', ['btc', 'eth', 'usdt', 'bnb', 'sol', 'usdc', 'xmr', 'ada', 'trx', 'doge'])))),
+            // Pre-load the currency list server-side so the swap card renders
+            // immediately instead of showing a spinner while the browser
+            // fetches /api/exchange/currencies on mount.
+            'currencies' => $exchange->currencies('standard'),
         ]);
     }
 

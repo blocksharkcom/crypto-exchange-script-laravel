@@ -1,0 +1,1 @@
+import{u as s}from"./app-DzktDXWi.js";function o(r,t){return t.split(".").reduce((e,n)=>{if(e&&typeof e=="object"&&n in e)return e[n]},r)}function i(r,t){return t?Object.entries(t).reduce((e,[n,u])=>e.replaceAll(`:${n}`,String(u)),r):r}function p(){const{props:r}=s(),t=r.i18n.messages;return(e,n)=>{const u=o(t,e);return typeof u=="string"?i(u,n):e}}export{p as u};

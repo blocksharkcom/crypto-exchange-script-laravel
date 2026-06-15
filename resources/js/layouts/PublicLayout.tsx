@@ -501,10 +501,12 @@ function Footer({ brand, legal, footerLinks, t }: {
                     { href: '/documentation/',   label: t('footer.docs') },
                 ]} />
                 <FooterCol heading={t('footer.legal')} items={[
-                    { href: legal.terms   ?? '#', label: t('footer.terms') },
-                    { href: legal.privacy ?? '#', label: t('footer.privacy') },
-                    { href: legal.aml     ?? '#', label: t('footer.aml') },
-                    ...footerLinks,
+                    ...(legal.terms   ? [{ href: legal.terms,   label: t('footer.terms')   }] : []),
+                    ...(legal.privacy ? [{ href: legal.privacy, label: t('footer.privacy') }] : []),
+                    ...(legal.aml     ? [{ href: legal.aml,     label: t('footer.aml')     }] : []),
+                    ...footerLinks.filter((it) =>
+                        it.href !== legal.terms && it.href !== legal.privacy && it.href !== legal.aml,
+                    ),
                 ]} />
             </div>
             <div className="container-edge py-5 text-xs text-muted-3 border-t border-line-1">

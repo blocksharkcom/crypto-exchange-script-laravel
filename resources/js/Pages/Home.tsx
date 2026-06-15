@@ -1,5 +1,4 @@
 import { Head, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
 import PublicLayout from '@/layouts/PublicLayout';
 import { CardSwitcher } from '@/components/exchange/CardSwitcher';
 import { Partners } from '@/components/marketing/Partners';
@@ -11,12 +10,12 @@ import { HowItWorks } from '@/components/marketing/HowItWorks';
 import { Guides } from '@/components/marketing/Guides';
 import { FinalCta } from '@/components/marketing/FinalCta';
 import { TypedHeadline } from '@/components/marketing/TypedHeadline';
-import { api } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 import type { Currency, SharedProps } from '@/Types';
 
 interface PageProps extends SharedProps {
     featured: string[];
+    currencies: Currency[];
 }
 
 export default function Home() {
@@ -24,17 +23,10 @@ export default function Home() {
     const { props } = usePage<PageProps>();
     const { brand } = props;
 
-    const [currencies, setCurrencies] = useState<Currency[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        let alive = true;
-        api.currencies()
-            .then((rows) => { if (alive) setCurrencies(rows); })
-            .catch(() => { /* surface empty card until configured */ })
-            .finally(() => { if (alive) setLoading(false); });
-        return () => { alive = false; };
-    }, []);
+    // Currencies are pre-loaded server-side via the HomeController, so the swap
+    // card renders immediately with no client-side fetch / spinner.
+    const currencies = props.currencies ?? [];
+    const loading = false;
 
     // Read ?from=&to=&amount= from the URL so deep-links from QuickPairs etc. pre-fill the form.
     const initial = (() => {

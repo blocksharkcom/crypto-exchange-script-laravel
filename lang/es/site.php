@@ -334,7 +334,7 @@ return [
 
     'preview' => [
         'meta_title' => ':brand — Script de intercambio cripto cross-chain',
-        'eyebrow' => 'CodeCanyon · Intercambio cripto cross-chain',
+        'eyebrow' => 'CrossSwap',
         'demo' => [
             'eyebrow' => 'Credenciales de demo',
             'intro' => 'Usa estas cuentas para explorar la demo en vivo. Tanto el panel del cliente como el panel de administración están conectados a la API real de ChangeNOW.',
@@ -352,10 +352,10 @@ return [
             'buy' => 'Comprar en CodeCanyon',
             'demo' => 'Ver demo en vivo',
             'bullets' => [
-                'Gana en cada intercambio',
-                'Clave de ChangeNOW gratuita',
+                'Motor de swaps no custodial',
                 '900+ tokens, 30+ cadenas',
                 'Instalador de un clic',
+                'Tienda multi-idioma',
             ],
         ],
         'trust' => [
